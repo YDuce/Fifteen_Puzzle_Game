@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/grid_size_button_3x3"
+            style="@style/GridSizeButtonStyle"
+            android:text="@string/gridSize3x3" />
+
+        <Button
+            android:id="@+id/grid_size_button_4x4"
+            style="@style/GridSizeButtonStyle"
+            android:text="@string/gridSize4x4" />
+
+        <Button
+            android:id="@+id/grid_size_button_5x5"
+            style="@style/GridSizeButtonStyle"
+            android:text="@string/gridSize5x5" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FifteenPuzzleGame</string>
+    <string name="action_settings">Settings</string>
+    <string name="gridSize3x3">3 x 3</string>
+    <string name="gridSize4x4">4 x 4</string>
+    <string name="gridSize5x5">5 x 5</string>
+</resources>
