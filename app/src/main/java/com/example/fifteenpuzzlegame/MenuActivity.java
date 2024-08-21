@@ -18,7 +18,7 @@ import java.util.List;
 public class MenuActivity extends AppCompatActivity {
 
     private ActivityMenuBinding binding;
-    private int numButtons;
+    private int numButtonRows;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,18 +60,18 @@ public class MenuActivity extends AppCompatActivity {
         int bClicked = view.getId();
 
         if (bClicked == R.id.grid_size_button_3x3) {
-            numButtons = 3;
+            numButtonRows = 3;
         } else if (bClicked == R.id.grid_size_button_4x4) {
-            numButtons = 4;
+            numButtonRows = 4;
         } else if (bClicked == R.id.grid_size_button_5x5) {
-            numButtons = 5;
+            numButtonRows = 5;
         }
 
         // Create an Intent to launch MainActivity
         Intent intent = new Intent(this, MainActivity.class);
 
         // Pass the numButtons value as an extra
-        intent.putExtra("numButtons", numButtons);
+        intent.putExtra("numButtonRows", numButtonRows);
 
         // Start MainActivity
         startActivity(intent);

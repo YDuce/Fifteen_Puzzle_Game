@@ -4,4 +4,6 @@
     <string name="gridSize3x3">3 x 3</string>
     <string name="gridSize4x4">4 x 4</string>
     <string name="gridSize5x5">5 x 5</string>
+    <string name="about">About This App</string>
+    <string name="how_to_play">How to Play</string>
 </resources>

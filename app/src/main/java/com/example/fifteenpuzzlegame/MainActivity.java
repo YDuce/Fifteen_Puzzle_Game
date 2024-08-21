@@ -13,7 +13,6 @@ import com.example.fifteenpuzzlegame.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 
@@ -29,32 +28,30 @@ public class MainActivity extends AppCompatActivity {
     private EditText numberInput;
 
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-//        setupToolbar();
-        int numButtons = getIntent().getIntExtra("numButtons", 0);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        setupToolbar();
+        setupFAB();
+
+        int numButtonRows = getIntent().getIntExtra("numButtonRows", 0);
 
         gridView = findViewById(R.id.grid_view);
 
         numbers = new ArrayList<>();
-        for (int i = 1; i <= numButtons * numButtons; i++) {
+        for (int i = 1; i <= numButtonRows * numButtonRows; i++) {
             numbers.add(i);
         }
         adapter = new ButtonAdapter(this, numbers);
         gridView.setAdapter(adapter);
-        gridView.setNumColumns(numButtons);
+        gridView.setNumColumns(numButtonRows);
         gridView.setColumnWidth(60);
 
         adapter.notifyDataSetChanged(); // Refresh the GridView
     }
-
-//    private void setupToolbar() {
-//        setSupportActionBar(binding.toolbar);
-//        if (getSupportActionBar() != null) {
-//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        }
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -63,12 +60,34 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//
-//        if (item.getItemId() == android.R.id.home) {
-//            getOnBackPressedDispatcher();
-//            return true;
-//        } else
-//            return super.onOptionsItemSelected(item);
-//    }
+    private void setupToolbar() {
+        setSupportActionBar(binding.toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private void setupFAB() {
+        binding.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAnchorView(R.id.fab)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        } else
+            return super.onOptionsItemSelected(item);
+    }
+
+
 }

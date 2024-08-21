@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.FifteenPuzzleGame" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
@@ -19,5 +19,36 @@
         <item name="android:layout_margin">8dp</item>
     </style>
 
+    <style name="Theme.Fab_Bottom_app_bar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary Color for the App Bar and FloatingActionButton -->
+        <item name="colorPrimary">#0F9D58</item>
+        <item name="colorPrimaryVariant">#0F9D58</item>
+        <item name="colorOnPrimary">#FFFFFF</item> <!-- Text color on the primary color -->
 
+        <!-- Customize BottomAppBar -->
+        <item name="bottomAppBarStyle">@style/BottomAppBarStyle</item>
+
+        <!-- Customize FloatingActionButton -->
+        <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
+
+        <!-- Optional: Customize other UI elements -->
+        <item name="colorSurface">#FFFFFF
+        </item> <!-- Background color for cards and other surfaces -->
+        <item name="colorOnSurface">#000000</item> <!-- Text color on surfaces -->
+    </style>
+
+    <!-- BottomAppBar Style -->
+    <style name="BottomAppBarStyle" parent="Widget.MaterialComponents.BottomAppBar">
+        <item name="backgroundTint">#0F9D58</item> <!-- Background color for BottomAppBar -->
+        <item name="fabCradleMargin">10dp</item>
+        <item name="fabCradleRoundedCornerRadius">10dp</item>
+        <item name="fabCradleVerticalOffset">10dp</item>
+    </style>
+
+    <!-- FloatingActionButton Style -->
+    <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">#0F9D58
+        </item> <!-- Background color for FloatingActionButton -->
+        <item name="fabSize">normal</item> <!-- Size of the FloatingActionButton -->
+    </style>
 </resources>
