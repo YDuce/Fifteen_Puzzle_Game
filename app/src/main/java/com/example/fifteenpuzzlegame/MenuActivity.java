@@ -13,7 +13,6 @@ import android.widget.Button;
 import com.example.fifteenpuzzlegame.databinding.ActivityMenuBinding;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -33,26 +32,21 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void setMenuButtons() {
-        ArrayList<Button> buttons = new ArrayList<Button>();
+        ArrayList<Button> buttons = new ArrayList<>();
         buttons.add(findViewById(R.id.grid_size_button_3x3));
         buttons.add(findViewById(R.id.grid_size_button_4x4));
         buttons.add(findViewById(R.id.grid_size_button_5x5));
 
         View.OnClickListener onClickListener = this::onButtonClick;
-        buttons.forEach(button -> {
+        for (Button button : buttons) {
             button.setOnClickListener(onClickListener);
-        });
+        }
     }
 
     private void setFAB() {
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.fab)
-                        .setAction("Action", null).show();
-            }
-        });
+        binding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAnchorView(R.id.fab)
+                .setAction("Action", null).show());
     }
 
     private void onButtonClick(View view) {

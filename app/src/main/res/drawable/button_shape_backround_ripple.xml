@@ -1,15 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="#66000000"> <!-- Semi-transparent dark ripple color for noticeable shadow -->
+    android:color="?attr/colorControlHighlight"> <!-- Ripple color -->
 
-    <!-- Background shape and shadowing -->
-    <item android:drawable="@drawable/button_shape_and_backround" />
+    <!-- Background shape -->
+    <item>
+        <layer-list >
 
-    <!-- Optional ripple mask to control ripple shape -->
-    <item android:id="@android:id/mask">
-        <shape android:shape="rectangle">
-            <solid android:color="#888888" /> <!-- Darker gray for ripple mask shadow effect -->
-            <corners android:radius="8dp" /> <!-- Ensure corners match the main shape -->
-        </shape>
+            <!-- Background shadow -->
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="#CCCCCC" /> <!-- Light gray shadow color -->
+                    <corners android:radius="8dp" />
+                    <padding
+                        android:bottom="2dp"
+                        android:left="2dp"
+                        android:right="2dp"
+                        android:top="2dp" />
+                </shape>
+            </item>
+
+            <!-- Main button shape with gradient and border -->
+            <item
+                android:bottom="2dp"
+                android:left="2dp"
+                android:right="2dp"
+                android:top="2dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/white" /> <!-- Main button color -->
+                    <stroke
+                        android:width="2dp"
+                        android:color="#888888" /> <!-- Border color -->
+                    <corners android:radius="8dp" />
+                    <gradient
+                        android:angle="90"
+                        android:endColor="#E0E0E0"
+                        android:startColor="#FFFFFF" /> <!-- Gradient effect -->
+                </shape>
+            </item>
+        </layer-list>
     </item>
-
 </ripple>

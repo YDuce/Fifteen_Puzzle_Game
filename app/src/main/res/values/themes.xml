@@ -7,18 +7,20 @@
 
     <style name="Theme.FifteenPuzzleGame" parent="Base.Theme.FifteenPuzzleGame" />
 
-    <!-- Define the style for the grid size buttons -->
-    <style name="GridSizeButtonStyle">
-        <item name="android:layout_width">@dimen/button_selection_width</item>
-        <item name="android:layout_height">@dimen/button_selection_height</item>
-        <item name="android:textSize">@dimen/button_selection_text_size</item>
-        <item name="android:textColor">@android:color/background_light</item>
-        <item name="android:background">@drawable/button_shape_backround_ripple</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:layout_margin">8dp</item>
+     Define the style for the grid size buttons
+    <style name="GridSizeButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:layout_width">@dimen/button_selection_width</item> <!-- Custom width from resources -->
+        <item name="android:layout_height">@dimen/button_selection_height</item> <!-- Custom height from resources -->
+        <item name="android:textSize">@dimen/button_selection_text_size</item> <!-- Custom text size from resources -->
+        <item name="android:textColor">@android:color/background_light</item> <!-- Text color -->
+        <item name="android:background">@drawable/button_shape_backround_ripple</item> <!-- Background with ripple effect -->
+        <item name="android:gravity">center</item> <!-- Text alignment -->
+        <item name="android:textStyle">bold</item> <!-- Text style -->
+        <item name="android:padding">8dp</item> <!-- Padding for content spacing -->
+        <item name="android:layout_margin">8dp</item> <!-- Margin around the button -->
     </style>
 
+    <!-- Theme for FloatingActionButton and BottomAppBar -->
     <style name="Theme.Fab_Bottom_app_bar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary Color for the App Bar and FloatingActionButton -->
         <item name="colorPrimary">#0F9D58</item>
@@ -32,8 +34,7 @@
         <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
 
         <!-- Optional: Customize other UI elements -->
-        <item name="colorSurface">#FFFFFF
-        </item> <!-- Background color for cards and other surfaces -->
+        <item name="colorSurface">#FFFFFF</item> <!-- Background color for cards and other surfaces -->
         <item name="colorOnSurface">#000000</item> <!-- Text color on surfaces -->
     </style>
 
@@ -47,8 +48,7 @@
 
     <!-- FloatingActionButton Style -->
     <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="backgroundTint">#0F9D58
-        </item> <!-- Background color for FloatingActionButton -->
+        <item name="backgroundTint">#0F9D58</item> <!-- Background color for FloatingActionButton -->
         <item name="fabSize">normal</item> <!-- Size of the FloatingActionButton -->
     </style>
 </resources>
