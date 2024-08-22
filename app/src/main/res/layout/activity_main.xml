@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- Guideline for aligning Menu and Move Counter -->
+    <!-- Define Guidelines -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/left_guideline"
         android:layout_width="wrap_content"
@@ -14,7 +14,6 @@
         android:orientation="vertical"
         app:layout_constraintGuide_begin="16dp" />
 
-    <!-- Guideline for aligning Pause and Timer -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/right_guideline"
         android:layout_width="wrap_content"
@@ -22,6 +21,7 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="16dp" />
 
+    <!-- Toolbar with elements aligned to guidelines -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbarmain"
         android:layout_width="0dp"
@@ -32,13 +32,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Move Counter aligned to left guideline -->
         <TextView
             android:id="@+id/move_counter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="16dp"
             android:fontFamily="monospace"
             android:text="Moves: 0"
             android:textColor="@android:color/white"
@@ -48,13 +47,14 @@
             app:layout_constraintBottom_toBottomOf="parent"
             tools:text="Moves: 0" />
 
+        <!-- Time Label and Chronometer aligned to right guideline -->
         <TextView
             android:id="@+id/time_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:fontFamily="monospace"
-            android:text="@string/time"
+            android:text="Time: "
             android:textColor="@android:color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -74,7 +74,6 @@
             app:layout_constraintTop_toTopOf="parent" />
     </com.google.android.material.appbar.MaterialToolbar>
 
-
     <!-- GridLayout for the puzzle -->
     <GridLayout
         android:id="@+id/grid_layout"
@@ -88,14 +87,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbarmain"
-        android:layout_gravity="center">
-    </GridLayout>
+        android:layout_gravity="center" />
 
-
-
+    <!-- BottomAppBar at the bottom of the screen -->
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -103,15 +100,14 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="BottomAppBar">
 
-        <!-- Menu Button inside CardView -->
+        <!-- Back Button inside CardView -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/left_guideline">
+            android:layout_gravity="start">
 
             <ImageButton
                 android:id="@+id/button_menu"
@@ -130,7 +126,6 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_gravity="center">
 
             <ImageButton
@@ -143,15 +138,14 @@
                 app:tint="@android:color/white" />
         </androidx.cardview.widget.CardView>
 
+        <!-- Statistics Button inside CardView -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_stats"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/right_guideline"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_gravity="end"
             android:layout_marginEnd="16dp">
 
             <ImageButton
@@ -164,8 +158,6 @@
                 app:tint="@android:color/white" />
         </androidx.cardview.widget.CardView>
 
-
     </com.google.android.material.bottomappbar.BottomAppBar>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

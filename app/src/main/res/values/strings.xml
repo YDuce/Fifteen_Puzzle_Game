@@ -12,4 +12,5 @@
     <string name="zero_moves">Moves: 0</string>
     <string name="time">Time:</string>
     <string name="pause_resume">Pause/Resume</string>
+    <string name="action_stats">action_stats</string>
 </resources>
