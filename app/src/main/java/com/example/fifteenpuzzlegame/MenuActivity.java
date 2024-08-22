@@ -43,11 +43,15 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
+
     private void setFAB() {
-        binding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAnchorView(R.id.fab)
+        binding.fab.setOnClickListener(view -> Snackbar.make(view,
+                        "Fifteen Game Puzzle semester project for Android App Development by Joseph Guindi & Yehoshua Dusowitz",
+                        Snackbar.LENGTH_LONG)
+                .setAnchorView(view)
                 .setAction("Action", null).show());
     }
+
 
     private void onButtonClick(View view) {
 

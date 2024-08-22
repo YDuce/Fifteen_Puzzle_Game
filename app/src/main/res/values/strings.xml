@@ -6,4 +6,10 @@
     <string name="gridSize5x5">5 x 5</string>
     <string name="about">About This App</string>
     <string name="how_to_play">How to Play</string>
+    <string name="menu">Menu</string>
+    <string name="action_menu">action menu</string>
+    <string name="action_pause">action pause</string>
+    <string name="zero_moves">Moves: 0</string>
+    <string name="time">Time:</string>
+    <string name="pause_resume">Pause/Resume</string>
 </resources>
