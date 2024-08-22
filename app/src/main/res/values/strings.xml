@@ -9,8 +9,10 @@
     <string name="menu">Menu</string>
     <string name="action_menu">action menu</string>
     <string name="action_pause">action pause</string>
-    <string name="zero_moves">Moves: 0</string>
     <string name="time">Time:</string>
     <string name="pause_resume">Pause/Resume</string>
     <string name="action_stats">action_stats</string>
+    <string name="moves_zero">Moves: 0</string>
+    <string name="action_restart">action_restart</string>
+    <string name="move_counter">Moves: %1$d</string>
 </resources>

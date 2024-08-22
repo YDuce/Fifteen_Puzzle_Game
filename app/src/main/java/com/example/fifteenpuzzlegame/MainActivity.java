@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -20,6 +19,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_GAMES_WON = "gamesWon";
     private static final String KEY_WIN_PERCENTAGE = "winPercentage";
 
-    private static final int GRID_SIZE = 4; // Default to a 4x4 grid
+    private int GRID_SIZE;  // Declare without initializing
     private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
     private GridLayout gridLayout;
     private int emptyRow = GRID_SIZE - 1;
@@ -46,6 +47,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Get the grid size from the Intent
+        Intent intent = getIntent();
+
+        // Update GRID_SIZE based on the received value
+        GRID_SIZE = intent.getIntExtra("numButtonRows", 4);
 
         setupToolbar();
         setupBottomAppBar();
@@ -69,38 +76,18 @@ public class MainActivity extends AppCompatActivity {
         saveGameData();
     }
 
+
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false); // Hide default title to show custom elements like timer and move counter
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false); // Hide default title to show custom elements like timer and move counter
     }
 
     private void setupBottomAppBar() {
         BottomAppBar bottomAppBar = findViewById(R.id.bottom_app_bar);
         setSupportActionBar(bottomAppBar);
-        bottomAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                int itemId = item.getItemId();
-                if (itemId == R.id.action_pause) {
-                    if (isPaused) {
-                        resumeGame();
-                    } else {
-                        pauseGame();
-                    }
-                    return true;
-                } else if (itemId == R.id.action_menu) {
-                    goToMenu();
-                    return true;
-                } else if (itemId == R.id.action_stats) {
-                    showStatistics();
-                    return true;
-                }
-                return false;
-            }
-        });
 
-        // Set up button click listeners if not using a menu
+        // Set up button click listeners
         findViewById(R.id.button_menu).setOnClickListener(v -> goToMenu());
         findViewById(R.id.button_pause).setOnClickListener(v -> {
             if (isPaused) {
@@ -110,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         findViewById(R.id.button_stats).setOnClickListener(v -> showStatistics());
+        findViewById(R.id.button_restart).setOnClickListener(this::restartGame);
     }
 
 
@@ -131,13 +119,18 @@ public class MainActivity extends AppCompatActivity {
                 params.setMargins(5, 5, 5, 5);
 
                 button.setLayoutParams(params);
-                button.setOnClickListener(v -> onTileClick(button, i, j));
+
+                final int row = i;  // Capture the current value of i
+                final int col = j;  // Capture the current value of j
+
+                button.setOnClickListener(v -> onTileClick(button, row, col));
 
                 buttons[i][j] = button;
                 gridLayout.addView(button);
             }
         }
     }
+
 
     private void onTileClick(Button button, int row, int col) {
         // Check if the tile clicked is adjacent to the empty tile
@@ -153,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Increment move count
             moveCount++;
-            moveCounterTextView.setText("Moves: " + moveCount);
+            moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
 
             // Check if the player has won
             if (checkIfWon()) {
@@ -229,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Reset move count
         moveCount = 0;
-        moveCounterTextView.setText("Moves: " + moveCount);
+        moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
     }
 
     private void startChronometer() {
@@ -280,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
     private void showStatistics() {
         String stats = "Games Played: " + gamesPlayed +
                 "\nGames Won: " + gamesWon +
-                "\nWin Percentage: " + String.format("%.2f", winPercentage) + "%";
+                "\nWin Percentage: " + String.format(Locale.getDefault(), "%.2f", winPercentage) + "%";
         Snackbar.make(findViewById(R.id.bottom_app_bar), stats, Snackbar.LENGTH_LONG).show();
     }
 

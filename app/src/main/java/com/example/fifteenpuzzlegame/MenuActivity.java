@@ -2,15 +2,14 @@ package com.example.fifteenpuzzlegame;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.fifteenpuzzlegame.databinding.ActivityMenuBinding;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
@@ -26,9 +25,15 @@ public class MenuActivity extends AppCompatActivity {
         binding = ActivityMenuBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
+
+        if (savedInstanceState != null) {
+            numButtonRows = savedInstanceState.getInt("numButtonRows", 4); // Default to 4x4
+        } else {
+            numButtonRows = 4; // Default grid size if no state is saved
+        }
+
         setFAB();
         setMenuButtons();
-
     }
 
     private void setMenuButtons() {
@@ -43,7 +48,6 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
-
     private void setFAB() {
         binding.fab.setOnClickListener(view -> Snackbar.make(view,
                         "Fifteen Game Puzzle semester project for Android App Development by Joseph Guindi & Yehoshua Dusowitz",
@@ -52,9 +56,7 @@ public class MenuActivity extends AppCompatActivity {
                 .setAction("Action", null).show());
     }
 
-
     private void onButtonClick(View view) {
-
         int bClicked = view.getId();
 
         if (bClicked == R.id.grid_size_button_3x3) {
@@ -68,12 +70,22 @@ public class MenuActivity extends AppCompatActivity {
         // Create an Intent to launch MainActivity
         Intent intent = new Intent(this, MainActivity.class);
 
-        // Pass the numButtons value as an extra
+        // Pass the numButtonRows value as an extra
         intent.putExtra("numButtonRows", numButtonRows);
 
         // Start MainActivity
         startActivity(intent);
     }
 
-}
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("numButtonRows", numButtonRows);
+    }
 
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        numButtonRows = savedInstanceState.getInt("numButtonRows", 4);
+    }
+}
