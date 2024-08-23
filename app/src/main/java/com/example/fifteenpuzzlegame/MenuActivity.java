@@ -17,6 +17,7 @@ public class MenuActivity extends AppCompatActivity {
 
     private ActivityMenuBinding binding;
     private int numButtonRows;
+    private int numButtonsColumns;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

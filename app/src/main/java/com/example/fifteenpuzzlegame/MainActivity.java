@@ -1,6 +1,6 @@
 package com.example.fifteenpuzzlegame;
 
-import static java.util.Objects.*;
+import static androidx.core.util.ObjectsCompat.requireNonNull;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,15 +14,13 @@ import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,18 +30,16 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_GAMES_WON = "gamesWon";
     private static final String KEY_WIN_PERCENTAGE = "winPercentage";
 
-    private int GRID_SIZE;
+    private PuzzleGame game;
     private Button[][] buttons;
     private GridLayout gridLayout;
-    private int emptyRow;
-    private int emptyCol;
-    private int moveCount = 0;
-    private int gamesPlayed = 0;
-    private int gamesWon = 0;
-    private double winPercentage = 0.0;
+    private int moveCount;
+    private int gamesPlayed;
+    private int gamesWon;
+    private double winPercentage;
     private TextView moveCounterTextView;
     private Chronometer chronometer;
-    private boolean isPaused = false;
+    private boolean isPaused;
     private long pauseOffset;
 
     @Override
@@ -51,27 +47,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = getIntent();
-        GRID_SIZE = intent.getIntExtra("numButtonRows", 4);
-        buttons = new Button[GRID_SIZE][GRID_SIZE];
-        emptyRow = GRID_SIZE - 1;
-        emptyCol = GRID_SIZE - 1;
+        initGame();
+        setupUI();
+        loadGameData();
+        initializeGrid();
+        updateUI();
+        startChronometer();
 
+        gamesPlayed++;
+        saveGameData();
+    }
+
+    private void initGame() {
+        Intent intent = getIntent();
+        int gridSize = intent.getIntExtra("numButtonRows", 4);
+        game = new PuzzleGame(gridSize * gridSize);
+    }
+
+    private void setupUI() {
         setupToolbar();
         setupBottomAppBar();
 
         gridLayout = findViewById(R.id.grid_layout);
         moveCounterTextView = findViewById(R.id.move_counter);
         chronometer = findViewById(R.id.chronometer);
-
-        loadGameData();
-
-        initializeGrid();
-        shuffleTiles();
-        startChronometer();
-
-        gamesPlayed++;
-        saveGameData();
     }
 
     private void setupToolbar() {
@@ -86,136 +85,125 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupBottomAppBar() {
         BottomAppBar bottomAppBar = findViewById(R.id.bottom_app_bar);
-        setSupportActionBar(bottomAppBar);
+        if (bottomAppBar != null) {
+            setSupportActionBar(bottomAppBar);
+        } else {
+            Log.e("MainActivity", "BottomAppBar is null. Check your layout file.");
+        }
 
+        setupBottomBarButtons();
+    }
+
+    private void setupBottomBarButtons() {
         ImageButton buttonHome = findViewById(R.id.button_home);
+        ImageButton buttonPause = findViewById(R.id.button_pause);
+        ImageButton buttonStats = findViewById(R.id.button_stats);
+        ImageButton buttonRestart = findViewById(R.id.button_restart);
+
         if (buttonHome != null) {
             buttonHome.setOnClickListener(v -> goToMenu());
         } else {
             Log.e("MainActivity", "buttonHome is null. Check your layout file.");
         }
 
-        ImageButton buttonPause = findViewById(R.id.button_pause);
         if (buttonPause != null) {
             buttonPause.setOnClickListener(v -> {
                 if (isPaused) {
                     resumeGame();
-                    Log.d("MainActivity", "Game resumed.");
                 } else {
                     pauseGame();
-                    Log.d("MainActivity", "Game paused.");
                 }
             });
         } else {
             Log.e("MainActivity", "buttonPause is null. Check your layout file.");
         }
 
-        ImageButton buttonStats = findViewById(R.id.button_stats);
         if (buttonStats != null) {
             buttonStats.setOnClickListener(v -> showStatistics());
         } else {
             Log.e("MainActivity", "buttonStats is null. Check your layout file.");
         }
 
-        ImageButton buttonRestart = findViewById(R.id.button_restart);
         if (buttonRestart != null) {
             buttonRestart.setOnClickListener(this::restartGame);
-            Log.i("MainActivity", "Game restarted.");
         } else {
             Log.e("MainActivity", "buttonRestart is null. Check your layout file.");
         }
     }
 
     private void initializeGrid() {
-        gridLayout.setRowCount(GRID_SIZE);
-        gridLayout.setColumnCount(GRID_SIZE);
+        int gridSize = game.getGridSize();
+        buttons = new Button[gridSize][gridSize];
+        gridLayout.setRowCount(gridSize);
+        gridLayout.setColumnCount(gridSize);
 
-        int totalMargin = 5 * (GRID_SIZE + 1);
+        int totalMargin = 5 * (gridSize + 1);
         int availableWidth = getResources().getDisplayMetrics().widthPixels - totalMargin;
-        int buttonSize = availableWidth / GRID_SIZE;
+        int buttonSize = availableWidth / gridSize;
 
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
-                Button button = new Button(this);
-
-                button.setText(String.valueOf(i * GRID_SIZE + j + 1));
-
-                if (i == GRID_SIZE - 1 && j == GRID_SIZE - 1) {
-                    button.setText("");
-                }
-
-                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                params.rowSpec = GridLayout.spec(i, 1f);
-                params.columnSpec = GridLayout.spec(j, 1f);
-                params.width = buttonSize;
-                params.height = buttonSize;
-                params.setMargins(5, 5, 5, 5);
-
-                button.setLayoutParams(params);
-
-                final int row = i;
-                final int col = j;
-
-                button.setOnClickListener(v -> onTileClick(button, row, col));
-
-                buttons[i][j] = button;
-                gridLayout.addView(button);
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                createButton(i, j, buttonSize);
             }
         }
     }
 
-    private void onTileClick(Button button, int row, int col) {
-        if ((Math.abs(row - emptyRow) == 1 && col == emptyCol) ||
-                (Math.abs(col - emptyCol) == 1 && row == emptyRow)) {
+    private void createButton(int row, int col, int buttonSize) {
+        // Create a new Button
+        Button button = new Button(this);
 
-            Button emptyButton = buttons[emptyRow][emptyCol];
+        // Set up GridLayout layout parameters
+        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+        params.rowSpec = GridLayout.spec(row, 1f);
+        params.columnSpec = GridLayout.spec(col, 1f);
+        params.width = buttonSize;
+        params.height = buttonSize;
+        params.setMargins(5, 5, 5, 5);  // Set margins between buttons
 
-            float translationX = emptyButton.getX() - button.getX();
-            float translationY = emptyButton.getY() - button.getY();
+        // Apply the layout parameters to the button
+        button.setLayoutParams(params);
 
-            button.animate()
-                    .translationXBy(translationX)
-                    .translationYBy(translationY)
-                    .setDuration(300)
-                    .withEndAction(() -> {
-                        emptyButton.setText(button.getText());
-                        button.setText("");
+        // Store the button reference in the 2D array for future access
+        buttons[row][col] = button;
 
-                        button.setTranslationX(0);
-                        button.setTranslationY(0);
+        // Add the button to the grid layout
+        gridLayout.addView(button);
 
-                        emptyRow = row;
-                        emptyCol = col;
+        // Set a click listener to handle tile movement when the button is clicked
+        button.setOnClickListener(v -> onTileClick(row, col));
+    }
 
-                        moveCount++;
-                        moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
+    private void onTileClick(int row, int col) {
+        // Attempt to move the tile at the specified row and column
+        if (game.moveTile(row, col)) {
+            // If the move was successful, update the UI to reflect the new state
+            updateUI();
 
-                        if (checkIfWon()) {
-                            button.postDelayed(() -> {
-                                gamesWon++;
-                                calculateWinPercentage();
-                                saveGameData();
-                                Snackbar.make(findViewById(R.id.bottom_app_bar), "Congratulations, you won!", Snackbar.LENGTH_LONG).show();
-                            }, 500);
-                        }
-                    })
-                    .start();
+            // Increment the move counter and update the display
+            moveCount++;
+            moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
+
+            // Check if the puzzle is solved
+            if (game.isSolved()) {
+                // Handle the game win scenario if the puzzle is solved
+                handleGameWin();
+            }
         }
     }
 
-    private boolean checkIfWon() {
-        int expectedValue = 1;
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
-                if (i == GRID_SIZE - 1 && j == GRID_SIZE - 1) {
-                    return buttons[i][j].getText().equals("");
-                } else if (!buttons[i][j].getText().toString().equals(String.valueOf(expectedValue))) {
-                    return false;
-                }
-                expectedValue++;
+    private void handleGameWin() {
+        gamesWon++;
+        calculateWinPercentage();
+        saveGameData();
+        Snackbar.make(findViewById(R.id.bottom_app_bar), "Congratulations, you won!", Snackbar.LENGTH_LONG).show();
+    }
+
+    private void updateUI() {
+        for (int i = 0; i < buttons.length; i++) {
+            for (int j = 0; j < buttons[i].length; j++) {
+                buttons[i][j].setText(String.valueOf(game.getTileValue(i, j)));
             }
         }
-        return true;
     }
 
     private void calculateWinPercentage() {
@@ -242,40 +230,17 @@ public class MainActivity extends AppCompatActivity {
         winPercentage = prefs.getFloat(KEY_WIN_PERCENTAGE, 0.0f);
     }
 
-    private void shuffleTiles() {
-        List<Integer> numbers = new ArrayList<>();
-        for (int i = 1; i < GRID_SIZE * GRID_SIZE; i++) {
-            numbers.add(i);
-        }
-        numbers.add(0);
-
-        Collections.shuffle(numbers);
-
-        int index = 0;
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
-                if (index < numbers.size() - 1) {
-                    buttons[i][j].setText(String.valueOf(numbers.get(index)));
-                } else {
-                    buttons[i][j].setText("");
-                    emptyRow = i;
-                    emptyCol = j;
-                }
-                index++;
-            }
-        }
-
-        moveCount = 0;
-        moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
-    }
-
     private void startChronometer() {
-        chronometer.setBase(SystemClock.elapsedRealtime());
-        chronometer.start();
+        if (chronometer != null) {
+            chronometer.setBase(SystemClock.elapsedRealtime());
+            chronometer.start();
+        } else {
+            Log.e("MainActivity", "Chronometer is null. Check your layout file.");
+        }
     }
 
     private void pauseGame() {
-        if (!isPaused) {
+        if (chronometer != null && !isPaused) {
             chronometer.stop();
             pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
             isPaused = true;
@@ -283,41 +248,77 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resumeGame() {
-        if (isPaused) {
+        if (chronometer != null && isPaused) {
             chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
             chronometer.start();
             isPaused = false;
         }
     }
 
-    private void goToMenu() {
-        // Navigate to menu activity to change grid size or other settings
-        Intent intent = new Intent(this, MenuActivity.class);
-        resetGameData(); // Reset game data when going back to the menu
-        startActivity(intent);
-        finish(); // Close MainActivity to ensure it's reset on return
+    private void restartGame(View view) {
+        // Reset the puzzle by shuffling the tiles
+        game.shuffleTiles();
+
+        // Reset move counter
+        moveCount = 0;
+        moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
+
+        // Reset and start the chronometer
+        pauseOffset = 0;
+        if (chronometer != null) {
+            chronometer.setBase(SystemClock.elapsedRealtime());
+            chronometer.start();
+        } else {
+            Log.e("MainActivity", "Chronometer is null. Check your layout file.");
+        }
+
+        // Update the UI to reflect the new game state
+        updateUI();
     }
 
-    // Method to restart the game
-    public void restartGame(View view) {
-        shuffleTiles();
-        pauseOffset = 0;  // Reset the pause offset to ensure accurate time tracking
-        startChronometer();
-        resetGameData(); // Reset game data when restarting
+    private void goToMenu() {
+        resetGameData();
+        Intent intent = new Intent(this, MenuActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void resetGameData() {
-        // Reset the tracking variables related to the current game
         moveCount = 0;
-        moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
+        if (moveCounterTextView != null) {
+            moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
+        } else {
+            Log.e("MainActivity", "MoveCounterTextView is null. Check your layout file.");
+        }
     }
-
 
     private void showStatistics() {
         String stats = "Games Played: " + gamesPlayed +
                 "\nGames Won: " + gamesWon +
                 "\nWin Percentage: " + String.format(Locale.getDefault(), "%.2f", winPercentage) + "%";
-        Snackbar.make(findViewById(R.id.bottom_app_bar), stats, Snackbar.LENGTH_LONG).show();
+
+        BottomAppBar bottomAppBar = findViewById(R.id.bottom_app_bar);
+        if (bottomAppBar != null) {
+            Snackbar.make(bottomAppBar, stats, Snackbar.LENGTH_LONG).show();
+        } else {
+            Log.e("MainActivity", "BottomAppBar is null. Check your layout file.");
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("gamesPlayed", gamesPlayed);
+        outState.putInt("gamesWon", gamesWon);
+        outState.putDouble("winPercentage", winPercentage);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        gamesPlayed = savedInstanceState.getInt("gamesPlayed");
+        gamesWon = savedInstanceState.getInt("gamesWon");
+        winPercentage = savedInstanceState.getDouble("winPercentage");
     }
 
     @Override
@@ -329,8 +330,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (isPaused) {
-            resumeGame();
-        }
+        resumeGame();
     }
 }
