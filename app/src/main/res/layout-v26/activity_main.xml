@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="16dp"
-        app:icon="@drawable/baseline_info_24"
+        app:icon="@drawable/ic_baseline_info_24"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         app:iconSize="24dp"
