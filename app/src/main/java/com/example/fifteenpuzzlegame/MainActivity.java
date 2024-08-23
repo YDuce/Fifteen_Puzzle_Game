@@ -1,13 +1,17 @@
 package com.example.fifteenpuzzlegame;
 
+import static java.util.Objects.*;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,15 +32,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_GAMES_WON = "gamesWon";
     private static final String KEY_WIN_PERCENTAGE = "winPercentage";
 
-    private int GRID_SIZE;  // Declare without initializing
-    private final Button[][] buttons = new Button[GRID_SIZE][GRID_SIZE];
+    private int GRID_SIZE;
+    private Button[][] buttons;
     private GridLayout gridLayout;
-    private int emptyRow = GRID_SIZE - 1;
-    private int emptyCol = GRID_SIZE - 1;
-    private int moveCount = 0; // Track the number of moves
-    private int gamesPlayed = 0; // Track the number of games played in this session
-    private int gamesWon = 0; // Track the number of games won in this session
-    private double winPercentage = 0.0; // Track the win percentage
+    private int emptyRow;
+    private int emptyCol;
+    private int moveCount = 0;
+    private int gamesPlayed = 0;
+    private int gamesWon = 0;
+    private double winPercentage = 0.0;
     private TextView moveCounterTextView;
     private Chronometer chronometer;
     private boolean isPaused = false;
@@ -48,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get the grid size from the Intent
         Intent intent = getIntent();
-
-        // Update GRID_SIZE based on the received value
         GRID_SIZE = intent.getIntExtra("numButtonRows", 4);
+        buttons = new Button[GRID_SIZE][GRID_SIZE];
+        emptyRow = GRID_SIZE - 1;
+        emptyCol = GRID_SIZE - 1;
 
         setupToolbar();
         setupBottomAppBar();
@@ -61,67 +64,97 @@ public class MainActivity extends AppCompatActivity {
         moveCounterTextView = findViewById(R.id.move_counter);
         chronometer = findViewById(R.id.chronometer);
 
-        // Load persisted data
         loadGameData();
 
-        gridLayout.setRowCount(GRID_SIZE);
-        gridLayout.setColumnCount(GRID_SIZE);
-
-        initializeGrid();  // This will now handle the dynamic creation of grid buttons
+        initializeGrid();
         shuffleTiles();
         startChronometer();
 
-        // Increment the number of games played
         gamesPlayed++;
         saveGameData();
     }
 
-
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false); // Hide default title to show custom elements like timer and move counter
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+        } else {
+            Log.e("MainActivity", "Toolbar is null. Check your layout file.");
+        }
     }
 
     private void setupBottomAppBar() {
         BottomAppBar bottomAppBar = findViewById(R.id.bottom_app_bar);
         setSupportActionBar(bottomAppBar);
 
-        // Set up button click listeners
-        findViewById(R.id.button_home).setOnClickListener(v -> goToMenu());
-        findViewById(R.id.button_pause).setOnClickListener(v -> {
-            if (isPaused) {
-                resumeGame();
-            } else {
-                pauseGame();
-            }
-        });
-        findViewById(R.id.button_stats).setOnClickListener(v -> showStatistics());
-        findViewById(R.id.button_restart).setOnClickListener(this::restartGame);
+        ImageButton buttonHome = findViewById(R.id.button_home);
+        if (buttonHome != null) {
+            buttonHome.setOnClickListener(v -> goToMenu());
+        } else {
+            Log.e("MainActivity", "buttonHome is null. Check your layout file.");
+        }
+
+        ImageButton buttonPause = findViewById(R.id.button_pause);
+        if (buttonPause != null) {
+            buttonPause.setOnClickListener(v -> {
+                if (isPaused) {
+                    resumeGame();
+                    Log.d("MainActivity", "Game resumed.");
+                } else {
+                    pauseGame();
+                    Log.d("MainActivity", "Game paused.");
+                }
+            });
+        } else {
+            Log.e("MainActivity", "buttonPause is null. Check your layout file.");
+        }
+
+        ImageButton buttonStats = findViewById(R.id.button_stats);
+        if (buttonStats != null) {
+            buttonStats.setOnClickListener(v -> showStatistics());
+        } else {
+            Log.e("MainActivity", "buttonStats is null. Check your layout file.");
+        }
+
+        ImageButton buttonRestart = findViewById(R.id.button_restart);
+        if (buttonRestart != null) {
+            buttonRestart.setOnClickListener(this::restartGame);
+            Log.i("MainActivity", "Game restarted.");
+        } else {
+            Log.e("MainActivity", "buttonRestart is null. Check your layout file.");
+        }
     }
 
-
     private void initializeGrid() {
+        gridLayout.setRowCount(GRID_SIZE);
+        gridLayout.setColumnCount(GRID_SIZE);
+
+        int totalMargin = 5 * (GRID_SIZE + 1);
+        int availableWidth = getResources().getDisplayMetrics().widthPixels - totalMargin;
+        int buttonSize = availableWidth / GRID_SIZE;
+
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
                 Button button = new Button(this);
+
                 button.setText(String.valueOf(i * GRID_SIZE + j + 1));
 
                 if (i == GRID_SIZE - 1 && j == GRID_SIZE - 1) {
-                    button.setText(""); // Empty tile for the last position
+                    button.setText("");
                 }
 
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                 params.rowSpec = GridLayout.spec(i, 1f);
                 params.columnSpec = GridLayout.spec(j, 1f);
-                params.width = 0;
-                params.height = 0;
+                params.width = buttonSize;
+                params.height = buttonSize;
                 params.setMargins(5, 5, 5, 5);
 
                 button.setLayoutParams(params);
 
-                final int row = i;  // Capture the current value of i
-                final int col = j;  // Capture the current value of j
+                final int row = i;
+                final int col = j;
 
                 button.setOnClickListener(v -> onTileClick(button, row, col));
 
@@ -131,59 +164,51 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void onTileClick(Button button, int row, int col) {
         if ((Math.abs(row - emptyRow) == 1 && col == emptyCol) ||
                 (Math.abs(col - emptyCol) == 1 && row == emptyRow)) {
 
-            // Get the button that represents the empty tile
             Button emptyButton = buttons[emptyRow][emptyCol];
 
-            // Calculate the distance to move
             float translationX = emptyButton.getX() - button.getX();
             float translationY = emptyButton.getY() - button.getY();
 
-            // Animate the clicked tile to the empty tile's position
             button.animate()
                     .translationXBy(translationX)
                     .translationYBy(translationY)
                     .setDuration(300)
                     .withEndAction(() -> {
-                        // Swap the text after the animation
                         emptyButton.setText(button.getText());
                         button.setText("");
 
-                        // Reset the translation after animation
                         button.setTranslationX(0);
                         button.setTranslationY(0);
 
-                        // Update the empty tile's position
                         emptyRow = row;
                         emptyCol = col;
 
-                        // Increment move count and update the display
                         moveCount++;
                         moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
 
-                        // Check if the player has won after the move
                         if (checkIfWon()) {
-                            gamesWon++;
-                            calculateWinPercentage();
-                            saveGameData();
-                            // Optionally display a win message or handle the win scenario
+                            button.postDelayed(() -> {
+                                gamesWon++;
+                                calculateWinPercentage();
+                                saveGameData();
+                                Snackbar.make(findViewById(R.id.bottom_app_bar), "Congratulations, you won!", Snackbar.LENGTH_LONG).show();
+                            }, 500);
                         }
                     })
                     .start();
         }
     }
 
-
     private boolean checkIfWon() {
         int expectedValue = 1;
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
                 if (i == GRID_SIZE - 1 && j == GRID_SIZE - 1) {
-                    return buttons[i][j].getText().equals(""); // Last tile should be empty
+                    return buttons[i][j].getText().equals("");
                 } else if (!buttons[i][j].getText().toString().equals(String.valueOf(expectedValue))) {
                     return false;
                 }
@@ -222,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 1; i < GRID_SIZE * GRID_SIZE; i++) {
             numbers.add(i);
         }
-        numbers.add(0); // 0 represents the empty space
+        numbers.add(0);
 
         Collections.shuffle(numbers);
 
@@ -232,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
                 if (index < numbers.size() - 1) {
                     buttons[i][j].setText(String.valueOf(numbers.get(index)));
                 } else {
-                    buttons[i][j].setText(""); // Empty tile
+                    buttons[i][j].setText("");
                     emptyRow = i;
                     emptyCol = j;
                 }
@@ -240,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Reset move count
         moveCount = 0;
         moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
     }
@@ -283,12 +307,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetGameData() {
-        // Reset the tracking variables when the game is restarted or MainActivity is relaunched
-        gamesPlayed = 0;
-        gamesWon = 0;
-        winPercentage = 0.0;
-        saveGameData();
+        // Reset the tracking variables related to the current game
+        moveCount = 0;
+        moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
     }
+
 
     private void showStatistics() {
         String stats = "Games Played: " + gamesPlayed +

@@ -1,0 +1,42 @@
+<com.google.android.material.appbar.MaterialToolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbarmain"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorPrimary"
+    android:elevation="4dp">
+
+    <!-- Move Counter aligned to the left with margin -->
+    <TextView
+        android:id="@+id/move_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:fontFamily="monospace"
+        android:text="@string/moves_zero"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+    <!-- Time Label and Chronometer aligned to the right with margin -->
+    <TextView
+        android:id="@+id/time_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="monospace"
+        android:text="@string/time"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+    <Chronometer
+        android:id="@+id/chronometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="monospace"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+</com.google.android.material.appbar.MaterialToolbar>
