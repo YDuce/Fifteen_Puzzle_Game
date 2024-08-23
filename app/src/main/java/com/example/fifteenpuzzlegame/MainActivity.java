@@ -130,15 +130,22 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", "buttonRestart is null. Check your layout file.");
         }
     }
+
     private void initializeGrid() {
         int gridSize = game.getGridSize(); // Get the grid dimension (e.g., 3 for a 3x3 grid)
         buttons = new Button[gridSize][gridSize]; // Create a 2D array for buttons
         gridLayout.setRowCount(gridSize);
         gridLayout.setColumnCount(gridSize);
 
+        // Calculate the total margin around the buttons
         int totalMargin = 5 * (gridSize + 1);
+
+        // Calculate available width and height of the screen minus margins
         int availableWidth = getResources().getDisplayMetrics().widthPixels - totalMargin;
-        int buttonSize = availableWidth / gridSize;
+        int availableHeight = getResources().getDisplayMetrics().heightPixels - totalMargin;
+
+        // Use the smaller of the width and height to calculate button size
+        int buttonSize = Math.min(availableWidth, availableHeight) / gridSize;
 
         // Loop through the rows and columns to create the correct number of buttons
         for (int i = 0; i < gridSize; i++) {
@@ -147,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 
     private void createButton(int row, int col, int buttonSize) {
         Button button = new Button(this);
@@ -160,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         params.columnSpec = GridLayout.spec(col);
         params.width = buttonSize;
         params.height = buttonSize;
-        params.setMargins(5, 5, 5, 5);
+        params.setMargins(5, 5, 5, 5);  // Set consistent margins
 
         button.setLayoutParams(params);
 
@@ -182,9 +190,6 @@ public class MainActivity extends AppCompatActivity {
         // Set a click listener to handle tile movement when the button is clicked
         button.setOnClickListener(v -> onTileClick(row, col));
     }
-
-
-
 
 
     private void onTileClick(int row, int col) {
