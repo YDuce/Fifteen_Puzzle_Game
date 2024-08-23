@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private void initGame() {
         Intent intent = getIntent();
         int gridSize = intent.getIntExtra("numButtonRows", 4);
-        game = new PuzzleGame(gridSize * gridSize);
+        game = new PuzzleGame(gridSize);
     }
 
     private void setupUI() {
@@ -130,10 +130,9 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", "buttonRestart is null. Check your layout file.");
         }
     }
-
     private void initializeGrid() {
-        int gridSize = game.getGridSize();
-        buttons = new Button[gridSize][gridSize];
+        int gridSize = game.getGridSize(); // Get the grid dimension (e.g., 3 for a 3x3 grid)
+        buttons = new Button[gridSize][gridSize]; // Create a 2D array for buttons
         gridLayout.setRowCount(gridSize);
         gridLayout.setColumnCount(gridSize);
 
@@ -141,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
         int availableWidth = getResources().getDisplayMetrics().widthPixels - totalMargin;
         int buttonSize = availableWidth / gridSize;
 
+        // Loop through the rows and columns to create the correct number of buttons
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 createButton(i, j, buttonSize);
@@ -149,19 +149,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createButton(int row, int col, int buttonSize) {
-        // Create a new Button
         Button button = new Button(this);
+
+        // Get the tile value from the game logic
+        int tileValue = game.getTileValue(row, col);
 
         // Set up GridLayout layout parameters
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-        params.rowSpec = GridLayout.spec(row, 1f);
-        params.columnSpec = GridLayout.spec(col, 1f);
+        params.rowSpec = GridLayout.spec(row);
+        params.columnSpec = GridLayout.spec(col);
         params.width = buttonSize;
         params.height = buttonSize;
-        params.setMargins(5, 5, 5, 5);  // Set margins between buttons
+        params.setMargins(5, 5, 5, 5);
 
-        // Apply the layout parameters to the button
         button.setLayoutParams(params);
+
+        // Set the button text based on the tile value
+        if (tileValue == 0) {
+            button.setText("");  // Empty tile
+            button.setBackgroundResource(R.drawable.tile_empty); // Apply empty tile background
+        } else {
+            button.setText(String.valueOf(tileValue));
+            button.setBackgroundResource(R.drawable.tile_normal); // Apply normal tile background
+        }
 
         // Store the button reference in the 2D array for future access
         buttons[row][col] = button;
@@ -172,6 +182,10 @@ public class MainActivity extends AppCompatActivity {
         // Set a click listener to handle tile movement when the button is clicked
         button.setOnClickListener(v -> onTileClick(row, col));
     }
+
+
+
+
 
     private void onTileClick(int row, int col) {
         // Attempt to move the tile at the specified row and column
@@ -201,10 +215,18 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI() {
         for (int i = 0; i < buttons.length; i++) {
             for (int j = 0; j < buttons[i].length; j++) {
-                buttons[i][j].setText(String.valueOf(game.getTileValue(i, j)));
+                int tileValue = game.getTileValue(i, j);
+                if (tileValue == 0) {
+                    buttons[i][j].setText("");  // Empty tile
+                    buttons[i][j].setBackgroundResource(R.drawable.tile_empty); // Optional: Custom background for empty tile
+                } else {
+                    buttons[i][j].setText(String.valueOf(tileValue));
+                    buttons[i][j].setBackgroundResource(R.drawable.tile_normal); // Optional: Custom background for normal tiles
+                }
             }
         }
     }
+
 
     private void calculateWinPercentage() {
         if (gamesPlayed > 0) {
