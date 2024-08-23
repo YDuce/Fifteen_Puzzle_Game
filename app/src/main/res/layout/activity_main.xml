@@ -99,12 +99,12 @@
             app:cardElevation="4dp">
 
             <ImageButton
-                android:id="@+id/button_menu"
+                android:id="@+id/button_home"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/action_menu"
-                android:src="@drawable/ic_menu"
+                android:src="@drawable/ic_home"
                 app:tint="@android:color/holo_purple" />
         </androidx.cardview.widget.CardView>
 

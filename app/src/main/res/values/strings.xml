@@ -15,4 +15,7 @@
     <string name="moves_zero">Moves: 0</string>
     <string name="action_restart">action_restart</string>
     <string name="move_counter">Moves: %1$d</string>
+    <string name="grid_size_3x3">3x3 Grid</string>
+    <string name="grid_size_4x4">4x4 Grid</string>
+    <string name="grid_size_5x5">5x5 Grid</string>
 </resources>

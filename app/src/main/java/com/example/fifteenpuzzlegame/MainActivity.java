@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(bottomAppBar);
 
         // Set up button click listeners
-        findViewById(R.id.button_menu).setOnClickListener(v -> goToMenu());
+        findViewById(R.id.button_home).setOnClickListener(v -> goToMenu());
         findViewById(R.id.button_pause).setOnClickListener(v -> {
             if (isPaused) {
                 resumeGame();
@@ -133,30 +133,50 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void onTileClick(Button button, int row, int col) {
-        // Check if the tile clicked is adjacent to the empty tile
         if ((Math.abs(row - emptyRow) == 1 && col == emptyCol) ||
                 (Math.abs(col - emptyCol) == 1 && row == emptyRow)) {
-            // Swap the tiles
-            buttons[emptyRow][emptyCol].setText(button.getText());
-            button.setText("");
 
-            // Update the empty tile's position
-            emptyRow = row;
-            emptyCol = col;
+            // Get the button that represents the empty tile
+            Button emptyButton = buttons[emptyRow][emptyCol];
 
-            // Increment move count
-            moveCount++;
-            moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
+            // Calculate the distance to move
+            float translationX = emptyButton.getX() - button.getX();
+            float translationY = emptyButton.getY() - button.getY();
 
-            // Check if the player has won
-            if (checkIfWon()) {
-                gamesWon++;
-                calculateWinPercentage();
-                saveGameData();
-                // Optionally display a message or handle win scenario
-            }
+            // Animate the clicked tile to the empty tile's position
+            button.animate()
+                    .translationXBy(translationX)
+                    .translationYBy(translationY)
+                    .setDuration(300)
+                    .withEndAction(() -> {
+                        // Swap the text after the animation
+                        emptyButton.setText(button.getText());
+                        button.setText("");
+
+                        // Reset the translation after animation
+                        button.setTranslationX(0);
+                        button.setTranslationY(0);
+
+                        // Update the empty tile's position
+                        emptyRow = row;
+                        emptyCol = col;
+
+                        // Increment move count and update the display
+                        moveCount++;
+                        moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
+
+                        // Check if the player has won after the move
+                        if (checkIfWon()) {
+                            gamesWon++;
+                            calculateWinPercentage();
+                            saveGameData();
+                            // Optionally display a win message or handle the win scenario
+                        }
+                    })
+                    .start();
         }
     }
+
 
     private boolean checkIfWon() {
         int expectedValue = 1;
