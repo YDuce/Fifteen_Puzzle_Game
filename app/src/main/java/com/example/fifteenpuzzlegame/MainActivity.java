@@ -50,9 +50,6 @@ public class MainActivity extends AppCompatActivity {
         setupUI();
         loadGameData();
         initializeGrid();
-        updateUI();
-        startChronometer();
-
         gamesPlayed++;
         saveGameData();
     }
@@ -188,6 +185,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onTileClick(int row, int col) {
+
+        if (moveCount == 0) {
+            startChronometer();
+        }
         // Attempt to move the tile at the specified row and column
         if (!isPaused) {  // Check if the game is not paused
             if (game.moveTile(row, col)) {
