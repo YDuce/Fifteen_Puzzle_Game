@@ -1,103 +1,78 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- BottomAppBar at the bottom of the screen -->
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
         android:backgroundTint="@android:color/darker_gray"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         tools:ignore="BottomAppBar"
         tools:showIn="@layout/activity_main">
 
-        <!-- Back Button inside CardView -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_home"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="20dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp">
 
-            <ImageButton
-                android:id="@+id/button_home"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/action_menu"
-                android:src="@drawable/ic_home"
-                app:tint="@android:color/holo_purple" />
-        </androidx.cardview.widget.CardView>
+            <!-- Home Button inside CardView -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_home"
+                style="@style/CardViewStyle">
 
-        <!-- Pause Button inside CardView -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+                <ImageButton
+                    android:id="@+id/button_home"
+                    style="@style/ImageButtonStyle"
+                    android:contentDescription="@string/action_menu"
+                    android:src="@drawable/ic_home" />
+            </androidx.cardview.widget.CardView>
 
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="20dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            <!-- Pause Button inside CardView -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_pause"
+                style="@style/CardViewStyle"
+                android:layout_marginStart="8dp">
 
-            <ImageButton
-                android:id="@+id/button_pause"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/action_pause"
-                android:src="@drawable/ic_pause"
-                app:tint="@android:color/holo_purple" />
-        </androidx.cardview.widget.CardView>
+                <ImageButton
+                    android:id="@+id/button_pause"
+                    style="@style/ImageButtonStyle"
+                    android:contentDescription="@string/action_pause"
+                    android:src="@drawable/ic_pause" />
+            </androidx.cardview.widget.CardView>
 
-        <!-- Restart Button inside CardView -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_restart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="20dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            <!-- Restart Button inside CardView -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_restart"
+                style="@style/CardViewStyle"
+                android:layout_marginStart="8dp">
 
-            <ImageButton
-                android:id="@+id/button_restart"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/action_restart"
-                android:src="@drawable/ic_restart"
-                app:tint="@android:color/holo_purple" />
-        </androidx.cardview.widget.CardView>
+                <ImageButton
+                    android:id="@+id/button_restart"
+                    style="@style/ImageButtonStyle"
+                    android:contentDescription="@string/action_restart"
+                    android:src="@drawable/ic_restart" />
+            </androidx.cardview.widget.CardView>
 
+            <!-- Statistics Button inside CardView -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_stats"
+                style="@style/CardViewStyle"
+                android:layout_marginStart="8dp">
 
-        <!-- Statistics Button inside CardView -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_stats"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="20dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+                <ImageButton
+                    android:id="@+id/button_stats"
+                    style="@style/ImageButtonStyle"
+                    android:contentDescription="@string/action_stats"
+                    android:src="@drawable/ic_stats" />
+            </androidx.cardview.widget.CardView>
 
-            <ImageButton
-                android:id="@+id/button_stats"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/action_stats"
-                android:src="@drawable/ic_stats"
-                app:tint="@android:color/holo_purple" />
-        </androidx.cardview.widget.CardView>
+        </LinearLayout>
 
     </com.google.android.material.bottomappbar.BottomAppBar>
 

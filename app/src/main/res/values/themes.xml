@@ -20,6 +20,23 @@
         <item name="android:padding">8dp</item>
         <item name="android:layout_margin">8dp</item>
     </style>
+        <!-- Style for the CardView components -->
+        <style name="CardViewStyle">
+            <item name="android:layout_width">wrap_content</item>
+            <item name="android:layout_height">wrap_content</item>
+            <item name="cardBackgroundColor">@android:color/white</item>
+            <item name="cardCornerRadius">12dp</item>
+            <item name="cardElevation">12dp</item>
+            <item name="android:background">@drawable/card_background_gradient</item>
+        </style>
+
+        <!-- Style for ImageButtons inside CardViews -->
+        <style name="ImageButtonStyle">
+            <item name="android:layout_width">56dp</item>
+            <item name="android:layout_height">56dp</item>
+            <item name="android:background">?attr/selectableItemBackground</item>
+            <item name="tint">@android:color/holo_purple</item>
+        </style>
 
     <style name="CustomDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:background">#333333</item> <!-- Dark background color -->
