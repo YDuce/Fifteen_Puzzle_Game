@@ -3,23 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/custom_gray"
     tools:context=".MenuActivity">
 
-    <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/custom_gray"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="0dp"
         app:title="Select Grid Size"
-        app:titleTextColor="@android:color/white" />
+        app:titleCentered="true"
+        app:titleTextColor="@android:color/white"
+        tools:ignore="MissingConstraints" />
 
-    <!-- Grid Size Buttons -->
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:gravity="center"
@@ -30,43 +33,26 @@
 
         <Button
             android:id="@+id/grid_size_button_3x3"
-            android:layout_width="200dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:background="@color/design_default_color_primary"
-            android:text="@string/grid_size_3x3"
-            android:textSize="18sp"
-            android:textColor="@android:color/white" />
+            style="@style/GridSizeButtonStyle"
+            android:text="@string/grid_size_3x3" />
 
         <Button
             android:id="@+id/grid_size_button_4x4"
-            android:layout_width="200dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:background="@color/design_default_color_primary"
-            android:text="@string/grid_size_4x4"
-            android:textSize="18sp"
-            android:textColor="@android:color/white" />
+            style="@style/GridSizeButtonStyle"
+            android:text="@string/grid_size_4x4" />
 
         <Button
             android:id="@+id/grid_size_button_5x5"
-            android:layout_width="200dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:background="@color/design_default_color_primary"
-            android:text="@string/grid_size_5x5"
-            android:textSize="18sp"
-            android:textColor="@android:color/white" />
+            style="@style/GridSizeButtonStyle"
+            android:text="@string/grid_size_5x5" />
     </LinearLayout>
 
-    <!-- Floating Action Button (FAB) for About -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:background="@color/design_default_color_primary"
         android:contentDescription="@string/about"
         android:src="@drawable/ic_baseline_info_24"
         app:layout_constraintBottom_toBottomOf="parent"

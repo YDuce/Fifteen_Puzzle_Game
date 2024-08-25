@@ -7,9 +7,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -33,10 +35,12 @@ public class MainActivity extends AppCompatActivity {
     private PuzzleGame game;
     private Button[][] buttons;
     private GridLayout gridLayout;
-    private int moveCount;
     private int gamesPlayed;
     private int gamesWon;
     private double winPercentage;
+    private int moveCount;
+    private int bestMoveCount;
+    private long bestTime = Long.MAX_VALUE;
     private TextView moveCounterTextView;
     private Chronometer chronometer;
     private boolean isPaused;
@@ -214,9 +218,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleGameWin() {
         pauseGame();
-        saveGameData();
-        gamesWon++;
-        calculateWinPercentage();
+        calculateGameStatistics();
         Snackbar.make(findViewById(R.id.bottom_app_bar), "Congratulations, you won!", Snackbar.LENGTH_LONG).show();
     }
 
@@ -236,13 +238,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void calculateWinPercentage() {
+    private void calculateGameStatistics() {
+        // Update games won and calculate win percentage
+        gamesWon++;
         if (gamesPlayed > 0) {
             winPercentage = (double) gamesWon / gamesPlayed * 100;
         } else {
             winPercentage = 0.0;
         }
+
+        // Calculate the current time
+        long currentTime = SystemClock.elapsedRealtime() - chronometer.getBase();
+
+        // Update the best time if the current time is better
+        if (currentTime < bestTime) {
+            bestTime = currentTime;
+        }
+
+        // Update the best move count if the current move count is better or it's the first game
+        if (moveCount < bestMoveCount || bestMoveCount == 0) {
+            bestMoveCount = moveCount;
+        }
+
+        // Save all the updated game data
+        saveGameData();
     }
+
 
     private void saveGameData() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -250,6 +271,8 @@ public class MainActivity extends AppCompatActivity {
         editor.putInt(KEY_GAMES_PLAYED, gamesPlayed);
         editor.putInt(KEY_GAMES_WON, gamesWon);
         editor.putFloat(KEY_WIN_PERCENTAGE, (float) winPercentage);
+        editor.putLong("bestTime", bestTime);
+        editor.putInt("bestMoveCount", bestMoveCount);
         editor.apply();
     }
 
@@ -258,6 +281,8 @@ public class MainActivity extends AppCompatActivity {
         gamesPlayed = prefs.getInt(KEY_GAMES_PLAYED, 0);
         gamesWon = prefs.getInt(KEY_GAMES_WON, 0);
         winPercentage = prefs.getFloat(KEY_WIN_PERCENTAGE, 0.0f);
+        bestTime = prefs.getLong("bestTime", Long.MAX_VALUE);
+        bestMoveCount = prefs.getInt("bestMoveCount", 0);
     }
 
 
@@ -339,14 +364,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showStatistics() {
-        String stats = "Games Played: " + gamesPlayed + "\nGames Won: " + gamesWon + "\nWin Percentage: " + String.format(Locale.getDefault(), "%.2f", winPercentage) + "%";
+        String stats = String.format(
+                Locale.getDefault(),
+                "Games Played: %d | Games Won: %d | Win Percentage: %.2f%%",
+                gamesPlayed, gamesWon, winPercentage
+        );
+
+        pauseGame();  // Pause the game while statistics are shown
 
         BottomAppBar bottomAppBar = findViewById(R.id.bottom_app_bar);
+
         if (bottomAppBar != null) {
-            Snackbar.make(bottomAppBar, stats, Snackbar.LENGTH_LONG).show();
+            Snackbar snackbar = Snackbar.make(bottomAppBar, stats, Snackbar.LENGTH_LONG);
+
+            snackbar.setAction(getString(R.string.details), v -> handleSnackbarClick());
+
+            View snackbarView = snackbar.getView();
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
+            params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+            params.bottomMargin = bottomAppBar.getHeight();
+            snackbarView.setLayoutParams(params);
+
+            snackbar.addCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    super.onDismissed(snackbar, event);
+                    resumeGame();
+                }
+            });
+
+            snackbar.show();
         } else {
             Log.e("MainActivity", "BottomAppBar is null. Check your layout file.");
         }
+    }
+
+
+    public void handleSnackbarClick() {
+        Intent intent = new Intent(getApplicationContext(), StatisticsActivity.class);
+
+        intent.putExtra("gamesPlayed", gamesPlayed);
+        intent.putExtra("gamesWon", gamesWon);
+        intent.putExtra("winPercentage", String.format(Locale.US, "%.2f", winPercentage));
+        intent.putExtra("bestTime", bestTime);
+        intent.putExtra("bestMoveCount", bestMoveCount);
+
+        startActivity(intent);
     }
 
     @Override
@@ -355,6 +418,8 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt("gamesPlayed", gamesPlayed);
         outState.putInt("gamesWon", gamesWon);
         outState.putDouble("winPercentage", winPercentage);
+        outState.putLong("bestTime", bestTime); // Save best time
+        outState.putInt("bestMoveCount", bestMoveCount); // Save best move count
     }
 
     @Override
@@ -363,6 +428,8 @@ public class MainActivity extends AppCompatActivity {
         gamesPlayed = savedInstanceState.getInt("gamesPlayed");
         gamesWon = savedInstanceState.getInt("gamesWon");
         winPercentage = savedInstanceState.getDouble("winPercentage");
+        bestTime = savedInstanceState.getLong("bestTime"); // Restore best time
+        bestMoveCount = savedInstanceState.getInt("bestMoveCount"); // Restore best move count
     }
 
     @Override
