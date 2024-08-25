@@ -4,165 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/darker_gray"
     tools:context=".MainActivity">
 
-    <!-- Toolbar with elements aligned using margins -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbarmain"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
+    <include
+        android:id="@+id/include_toolbar_main"
+        layout="@layout/toolbar_main"
+        app:layout_constraintBottom_toTopOf="@id/include_content_main"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <!-- Move Counter aligned to the left with margin -->
-        <TextView
-            android:id="@+id/move_counter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
-            android:fontFamily="monospace"
-            android:text="@string/moves_zero"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/moves_zero" />
-
-        <!-- Time Label and Chronometer aligned to the right with margin -->
-        <TextView
-            android:id="@+id/time_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="4dp"
-            android:fontFamily="monospace"
-            android:text="@string/time"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/chronometer"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="RtlSymmetry"
-            tools:text="Time: " />
-
-        <Chronometer
-            android:id="@+id/chronometer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="monospace"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </com.google.android.material.appbar.MaterialToolbar>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <include
+        android:id="@+id/include_content_main"
         layout="@layout/content_main"
-        app:layout_constraintTop_toBottomOf="@id/toolbarmain"
-        app:layout_constraintBottom_toTopOf="@id/bottom_app_bar"
+        app:layout_constraintBottom_toTopOf="@id/include_bottombar_main"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/include_toolbar_main" />
 
-
-    <!-- BottomAppBar at the bottom of the screen -->
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottom_app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+    <include
+        android:id="@+id/include_bottombar_main"
+        layout="@layout/bottombar_main"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="BottomAppBar">
-
-        <!-- Back Button inside CardView -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
-
-            <ImageButton
-                android:id="@+id/button_home"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/action_menu"
-                android:src="@drawable/ic_home"
-                app:tint="@android:color/holo_purple" />
-        </androidx.cardview.widget.CardView>
-
-        <!-- Pause Button inside CardView -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="24dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
-
-            <ImageButton
-                android:id="@+id/button_pause"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/action_pause"
-                android:src="@drawable/ic_pause"
-                app:tint="@android:color/holo_purple" />
-        </androidx.cardview.widget.CardView>
-
-        <!-- Restart Button inside CardView -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_restart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="24dp"
-
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
-
-            <ImageButton
-                android:id="@+id/button_restart"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/action_restart"
-                android:src="@drawable/ic_restart"
-                app:tint="@android:color/holo_purple" />
-        </androidx.cardview.widget.CardView>
-
-
-        <!-- Statistics Button inside CardView -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_stats"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
-
-            <ImageButton
-                android:id="@+id/button_stats"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/action_stats"
-                android:src="@drawable/ic_stats"
-                app:tint="@android:color/holo_purple" />
-        </androidx.cardview.widget.CardView>
-
-    </com.google.android.material.bottomappbar.BottomAppBar>
+        app:layout_constraintTop_toBottomOf="@id/include_content_main" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

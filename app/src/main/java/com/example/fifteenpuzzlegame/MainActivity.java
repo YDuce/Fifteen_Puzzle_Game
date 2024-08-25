@@ -137,15 +137,15 @@ public class MainActivity extends AppCompatActivity {
         gridLayout.setRowCount(gridSize);
         gridLayout.setColumnCount(gridSize);
 
-        // Calculate the total margin around the buttons
-        int totalMargin = 5 * (gridSize + 1);
+        // Calculate the total margin around the buttons (total margin per button is 10dp)
+        int totalMargin = 10 * (gridSize + 1);
 
         // Calculate available width and height of the screen minus margins
         int availableWidth = getResources().getDisplayMetrics().widthPixels - totalMargin;
         int availableHeight = getResources().getDisplayMetrics().heightPixels - totalMargin;
 
-        // Use the smaller of the width and height to calculate button size
-        int buttonSize = Math.min(availableWidth, availableHeight) / gridSize;
+        // Use the smaller of the width and height to calculate button size, slightly reduced to ensure fit
+        int buttonSize = (int) ((double) Math.min(availableWidth, availableHeight) / gridSize * 0.9); // Scale down a bit to avoid overflow
 
         // Loop through the rows and columns to create the correct number of buttons
         for (int i = 0; i < gridSize; i++) {
@@ -194,26 +194,29 @@ public class MainActivity extends AppCompatActivity {
 
     private void onTileClick(int row, int col) {
         // Attempt to move the tile at the specified row and column
-        if (game.moveTile(row, col)) {
-            // If the move was successful, update the UI to reflect the new state
-            updateUI();
+        if (!isPaused) {  // Check if the game is not paused
+            if (game.moveTile(row, col)) {
+                // If the move was successful, update the UI to reflect the new state
+                updateUI();
 
-            // Increment the move counter and update the display
-            moveCount++;
-            moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
+                // Increment the move counter and update the display
+                moveCount++;
+                moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
 
-            // Check if the puzzle is solved
-            if (game.isSolved()) {
-                // Handle the game win scenario if the puzzle is solved
-                handleGameWin();
+                // Check if the puzzle is solved
+                if (game.isSolved()) {
+                    // Handle the game win scenario if the puzzle is solved
+                    handleGameWin();
+                }
             }
         }
     }
 
     private void handleGameWin() {
+        pauseGame();
+        saveGameData();
         gamesWon++;
         calculateWinPercentage();
-        saveGameData();
         Snackbar.make(findViewById(R.id.bottom_app_bar), "Congratulations, you won!", Snackbar.LENGTH_LONG).show();
     }
 
@@ -223,10 +226,10 @@ public class MainActivity extends AppCompatActivity {
                 int tileValue = game.getTileValue(i, j);
                 if (tileValue == 0) {
                     buttons[i][j].setText("");  // Empty tile
-                    buttons[i][j].setBackgroundResource(R.drawable.tile_empty); // Optional: Custom background for empty tile
+                    buttons[i][j].setBackgroundResource(R.drawable.tile_empty); // background for empty tile
                 } else {
                     buttons[i][j].setText(String.valueOf(tileValue));
-                    buttons[i][j].setBackgroundResource(R.drawable.tile_normal); // Optional: Custom background for normal tiles
+                    buttons[i][j].setBackgroundResource(R.drawable.tile_normal); // background for normal tiles
                 }
             }
         }
@@ -257,20 +260,19 @@ public class MainActivity extends AppCompatActivity {
         winPercentage = prefs.getFloat(KEY_WIN_PERCENTAGE, 0.0f);
     }
 
-    private void startChronometer() {
-        if (chronometer != null) {
-            chronometer.setBase(SystemClock.elapsedRealtime());
-            chronometer.start();
-        } else {
-            Log.e("MainActivity", "Chronometer is null. Check your layout file.");
-        }
-    }
 
     private void pauseGame() {
         if (chronometer != null && !isPaused) {
             chronometer.stop();
             pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
             isPaused = true;
+        }
+
+        ImageButton buttonPause = findViewById(R.id.button_pause);
+        if (buttonPause != null) {
+            buttonPause.setImageResource(R.drawable.ic_play);  // Change to play icon
+        } else {
+            Log.e("MainActivity", "buttonPause is null. Check your layout file.");
         }
     }
 
@@ -279,6 +281,13 @@ public class MainActivity extends AppCompatActivity {
             chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
             chronometer.start();
             isPaused = false;
+        }
+
+        ImageButton buttonPause = findViewById(R.id.button_pause);
+        if (buttonPause != null) {
+            buttonPause.setImageResource(R.drawable.ic_pause);  // Change back to pause icon
+        } else {
+            Log.e("MainActivity", "buttonPause is null. Check your layout file.");
         }
     }
 
@@ -301,6 +310,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Update the UI to reflect the new game state
         updateUI();
+        resumeGame();
+    }
+
+    private void startChronometer() {
+        if (chronometer != null) {
+            chronometer.setBase(SystemClock.elapsedRealtime());
+            chronometer.start();
+        } else {
+            Log.e("MainActivity", "Chronometer is null. Check your layout file.");
+        }
     }
 
     private void goToMenu() {
@@ -320,9 +339,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showStatistics() {
-        String stats = "Games Played: " + gamesPlayed +
-                "\nGames Won: " + gamesWon +
-                "\nWin Percentage: " + String.format(Locale.getDefault(), "%.2f", winPercentage) + "%";
+        String stats = "Games Played: " + gamesPlayed + "\nGames Won: " + gamesWon + "\nWin Percentage: " + String.format(Locale.getDefault(), "%.2f", winPercentage) + "%";
 
         BottomAppBar bottomAppBar = findViewById(R.id.bottom_app_bar);
         if (bottomAppBar != null) {
