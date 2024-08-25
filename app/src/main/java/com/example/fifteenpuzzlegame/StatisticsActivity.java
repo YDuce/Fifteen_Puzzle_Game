@@ -21,7 +21,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar_statistics);
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {

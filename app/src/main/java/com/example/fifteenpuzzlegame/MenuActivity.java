@@ -17,7 +17,6 @@ public class MenuActivity extends AppCompatActivity {
 
     private ActivityMenuBinding binding;
     private int numButtonRows;
-    private int numButtonsColumns;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +24,12 @@ public class MenuActivity extends AppCompatActivity {
 
         binding = ActivityMenuBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        setSupportActionBar(binding.toolbar);
+        setSupportActionBar(binding.toolbarMenu);
 
         if (savedInstanceState != null) {
             numButtonRows = savedInstanceState.getInt("numButtonRows", 4); // Default to 4x4
         } else {
-            numButtonRows = 4; // Default grid size if no state is saved
+            numButtonRows = 4; // Default grid size
         }
 
         setFAB();
@@ -68,13 +67,10 @@ public class MenuActivity extends AppCompatActivity {
             numButtonRows = 5;
         }
 
-        // Create an Intent to launch MainActivity
         Intent intent = new Intent(this, MainActivity.class);
 
-        // Pass the numButtonRows value as an extra
         intent.putExtra("numButtonRows", numButtonRows);
 
-        // Start MainActivity
         startActivity(intent);
     }
 

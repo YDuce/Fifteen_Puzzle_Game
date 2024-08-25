@@ -3,6 +3,7 @@ package com.example.fifteenpuzzlegame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 public class PuzzleGame {
     private final int[][] tiles;
     private final int gridSize;
@@ -12,8 +13,8 @@ public class PuzzleGame {
     public PuzzleGame(int gridSize) {
         this.gridSize = gridSize;
         tiles = new int[gridSize][gridSize];
-        initializeTiles();  // Initialize the tiles with numbers, leaving the last one blank
-        shuffleTiles();     // Optional: Shuffle the tiles to start the game in a random state
+        initializeTiles();
+        shuffleTiles();
     }
 
     private void initializeTiles() {
@@ -39,10 +40,9 @@ public class PuzzleGame {
             }
         }
 
-        // Shuffle the tiles
         Collections.shuffle(flatTiles);
 
-        // Reassign shuffled tiles back to the 2D array
+        // place shuffled tiles back to the array
         int index = 0;
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
