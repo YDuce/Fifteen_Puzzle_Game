@@ -26,9 +26,6 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "GameStatsPrefs";
-    private static final String KEY_GAMES_PLAYED = "gamesPlayed";
-    private static final String KEY_GAMES_WON = "gamesWon";
-    private static final String KEY_WIN_PERCENTAGE = "winPercentage";
 
     private PuzzleGame game;
     private Button[][] buttons;
@@ -260,23 +257,25 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void saveGameData() {
+        int gridSize = game.getGridSize();
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(KEY_GAMES_PLAYED, gamesPlayed);
-        editor.putInt(KEY_GAMES_WON, gamesWon);
-        editor.putFloat(KEY_WIN_PERCENTAGE, (float) winPercentage);
-        editor.putLong("bestTime", bestTime);
-        editor.putInt("bestMoveCount", bestMoveCount);
+        editor.putInt("gamesPlayed_" + gridSize, gamesPlayed);
+        editor.putInt("gamesWon_" + gridSize, gamesWon);
+        editor.putFloat("winPercentage_" + gridSize, (float) winPercentage);
+        editor.putLong("bestTime_" + gridSize, bestTime);
+        editor.putInt("bestMoveCount_" + gridSize, bestMoveCount);
         editor.apply();
     }
 
     private void loadGameData() {
+        int gridSize = game.getGridSize();
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        gamesPlayed = prefs.getInt(KEY_GAMES_PLAYED, 0);
-        gamesWon = prefs.getInt(KEY_GAMES_WON, 0);
-        winPercentage = prefs.getFloat(KEY_WIN_PERCENTAGE, 0.0f);
-        bestTime = prefs.getLong("bestTime", Long.MAX_VALUE);
-        bestMoveCount = prefs.getInt("bestMoveCount", 0);
+        gamesPlayed = prefs.getInt("gamesPlayed_" + gridSize, 0);
+        gamesWon = prefs.getInt("gamesWon_" + gridSize, 0);
+        winPercentage = prefs.getFloat("winPercentage_" + gridSize, 0.0f);
+        bestTime = prefs.getLong("bestTime_" + gridSize, Long.MAX_VALUE);
+        bestMoveCount = prefs.getInt("bestMoveCount_" + gridSize, 0);
     }
 
 
@@ -365,13 +364,13 @@ public class MainActivity extends AppCompatActivity {
         new AlertDialog.Builder(this, R.style.CustomDialogTheme)
                 .setTitle("Game Statistics")
                 .setMessage(stats)
-                .setPositiveButton("Statistics", (dialog, which) -> handleSnackbarClick())
+                .setPositiveButton("Statistics", (dialog, which) -> launchStatistics())
                 .setNegativeButton("Close", (dialog, which) -> resumeGame())
                 .setCancelable(false)
                 .show();
     }
 
-    public void handleSnackbarClick() {
+    public void launchStatistics() {
         Intent intent = new Intent(getApplicationContext(), StatisticsActivity.class);
 
         intent.putExtra("gamesPlayed", gamesPlayed);
