@@ -7,21 +7,19 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Locale;
 
@@ -136,29 +134,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeGrid() {
-        int gridSize = game.getGridSize(); // Get the grid dimension (e.g., 3 for a 3x3 grid)
-        buttons = new Button[gridSize][gridSize]; // Create a 2D array for buttons
+        int gridSize = game.getGridSize();
+        buttons = new Button[gridSize][gridSize];
         gridLayout.setRowCount(gridSize);
         gridLayout.setColumnCount(gridSize);
 
         // Calculate the total margin around the buttons (total margin per button is 10dp)
         int totalMargin = 10 * (gridSize + 1);
 
-        // Calculate available width and height of the screen minus margins
+        // Calculate available width and height of the screen
         int availableWidth = getResources().getDisplayMetrics().widthPixels - totalMargin;
         int availableHeight = getResources().getDisplayMetrics().heightPixels - totalMargin;
 
-        // Use the smaller of the width and height to calculate button size, slightly reduced to ensure fit
+        // Use width and height to calculate button size
         int buttonSize = (int) ((double) Math.min(availableWidth, availableHeight) / gridSize * 0.9); // Scale down a bit to avoid overflow
 
-        // Loop through the rows and columns to create the correct number of buttons
+        // Loop through the rows and columns to create the buttons
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 createButton(i, j, buttonSize);
             }
         }
     }
-
 
     private void createButton(int row, int col, int buttonSize) {
         Button button = new Button(this);
@@ -172,29 +169,26 @@ public class MainActivity extends AppCompatActivity {
         params.columnSpec = GridLayout.spec(col);
         params.width = buttonSize;
         params.height = buttonSize;
-        params.setMargins(5, 5, 5, 5);  // Set consistent margins
+        params.setMargins(5, 5, 5, 5);  // margins
 
         button.setLayoutParams(params);
 
         // Set the button text based on the tile value
         if (tileValue == 0) {
             button.setText("");  // Empty tile
-            button.setBackgroundResource(R.drawable.tile_empty); // Apply empty tile background
+            button.setBackgroundResource(R.drawable.tile_empty); // empty tile background
         } else {
             button.setText(String.valueOf(tileValue));
-            button.setBackgroundResource(R.drawable.tile_normal); // Apply normal tile background
+            button.setBackgroundResource(R.drawable.tile_normal); // normal tile background
         }
 
-        // Store the button reference in the 2D array for future access
         buttons[row][col] = button;
 
-        // Add the button to the grid layout
+        // Adding button to the grid layout
         gridLayout.addView(button);
 
-        // Set a click listener to handle tile movement when the button is clicked
         button.setOnClickListener(v -> onTileClick(row, col));
     }
-
 
     private void onTileClick(int row, int col) {
         // Attempt to move the tile at the specified row and column
@@ -203,13 +197,10 @@ public class MainActivity extends AppCompatActivity {
                 // If the move was successful, update the UI to reflect the new state
                 updateUI();
 
-                // Increment the move counter and update the display
                 moveCount++;
                 moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
 
-                // Check if the puzzle is solved
                 if (game.isSolved()) {
-                    // Handle the game win scenario if the puzzle is solved
                     handleGameWin();
                 }
             }
@@ -219,7 +210,15 @@ public class MainActivity extends AppCompatActivity {
     private void handleGameWin() {
         pauseGame();
         calculateGameStatistics();
-        Snackbar.make(findViewById(R.id.bottom_app_bar), "Congratulations, you won!", Snackbar.LENGTH_LONG).show();
+
+        new AlertDialog.Builder(this, R.style.CustomDialogTheme)
+                .setTitle("Congratulations!")
+                .setMessage("You've solved the puzzle. What would you like to do next?")
+                .setPositiveButton("Play Again", (dialog, which) -> restartGame(null))
+                .setNegativeButton("Go to Menu", (dialog, which) -> goToMenu())
+                .setNeutralButton("Exit", (dialog, which) -> finish())
+                .show();
+
     }
 
     private void updateUI() {
@@ -239,7 +238,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void calculateGameStatistics() {
-        // Update games won and calculate win percentage
         gamesWon++;
         if (gamesPlayed > 0) {
             winPercentage = (double) gamesWon / gamesPlayed * 100;
@@ -247,20 +245,16 @@ public class MainActivity extends AppCompatActivity {
             winPercentage = 0.0;
         }
 
-        // Calculate the current time
         long currentTime = SystemClock.elapsedRealtime() - chronometer.getBase();
 
-        // Update the best time if the current time is better
         if (currentTime < bestTime) {
             bestTime = currentTime;
         }
 
-        // Update the best move count if the current move count is better or it's the first game
         if (moveCount < bestMoveCount || bestMoveCount == 0) {
             bestMoveCount = moveCount;
         }
 
-        // Save all the updated game data
         saveGameData();
     }
 
@@ -317,14 +311,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void restartGame(View view) {
-        // Reset the puzzle by shuffling the tiles
         game.shuffleTiles();
 
-        // Reset move counter
         moveCount = 0;
         moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
 
-        // Reset and start the chronometer
         pauseOffset = 0;
         if (chronometer != null) {
             chronometer.setBase(SystemClock.elapsedRealtime());
@@ -333,7 +324,6 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", "Chronometer is null. Check your layout file.");
         }
 
-        // Update the UI to reflect the new game state
         updateUI();
         resumeGame();
     }
@@ -366,39 +356,20 @@ public class MainActivity extends AppCompatActivity {
     private void showStatistics() {
         String stats = String.format(
                 Locale.getDefault(),
-                "Games Played: %d | Games Won: %d | Win Percentage: %.2f%%",
+                "Games Played: %d | Games Won: %d \nWin Percentage: %.2f%%",
                 gamesPlayed, gamesWon, winPercentage
         );
 
-        pauseGame();  // Pause the game while statistics are shown
+        pauseGame();
 
-        BottomAppBar bottomAppBar = findViewById(R.id.bottom_app_bar);
-
-        if (bottomAppBar != null) {
-            Snackbar snackbar = Snackbar.make(bottomAppBar, stats, Snackbar.LENGTH_LONG);
-
-            snackbar.setAction(getString(R.string.details), v -> handleSnackbarClick());
-
-            View snackbarView = snackbar.getView();
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
-            params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-            params.bottomMargin = bottomAppBar.getHeight();
-            snackbarView.setLayoutParams(params);
-
-            snackbar.addCallback(new Snackbar.Callback() {
-                @Override
-                public void onDismissed(Snackbar snackbar, int event) {
-                    super.onDismissed(snackbar, event);
-                    resumeGame();
-                }
-            });
-
-            snackbar.show();
-        } else {
-            Log.e("MainActivity", "BottomAppBar is null. Check your layout file.");
-        }
+        new AlertDialog.Builder(this, R.style.CustomDialogTheme)
+                .setTitle("Game Statistics")
+                .setMessage(stats)
+                .setPositiveButton("Statistics", (dialog, which) -> handleSnackbarClick())
+                .setNegativeButton("Close", (dialog, which) -> resumeGame())
+                .setCancelable(false)
+                .show();
     }
-
 
     public void handleSnackbarClick() {
         Intent intent = new Intent(getApplicationContext(), StatisticsActivity.class);
@@ -412,14 +383,15 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("gamesPlayed", gamesPlayed);
         outState.putInt("gamesWon", gamesWon);
         outState.putDouble("winPercentage", winPercentage);
-        outState.putLong("bestTime", bestTime); // Save best time
-        outState.putInt("bestMoveCount", bestMoveCount); // Save best move count
+        outState.putLong("bestTime", bestTime);
+        outState.putInt("bestMoveCount", bestMoveCount);
     }
 
     @Override
@@ -428,8 +400,8 @@ public class MainActivity extends AppCompatActivity {
         gamesPlayed = savedInstanceState.getInt("gamesPlayed");
         gamesWon = savedInstanceState.getInt("gamesWon");
         winPercentage = savedInstanceState.getDouble("winPercentage");
-        bestTime = savedInstanceState.getLong("bestTime"); // Restore best time
-        bestMoveCount = savedInstanceState.getInt("bestMoveCount"); // Restore best move count
+        bestTime = savedInstanceState.getLong("bestTime");
+        bestMoveCount = savedInstanceState.getInt("bestMoveCount");
     }
 
     @Override

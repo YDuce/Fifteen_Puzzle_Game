@@ -21,6 +21,13 @@
         <item name="android:layout_margin">8dp</item>
     </style>
 
+    <style name="CustomDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">#333333</item> <!-- Dark background color -->
+        <item name="android:textColorPrimary">#FFFFFF</item> <!-- White text color -->
+        <item name="android:windowMinWidthMajor">90%</item> <!-- Optional: Set width -->
+        <item name="android:windowMinWidthMinor">90%</item> <!-- Optional: Set width -->
+    </style>
+
     <!-- Theme for FloatingActionButton and BottomAppBar -->
     <style name="Theme.Fab_Bottom_app_bar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary Color for the App Bar and FloatingActionButton -->
