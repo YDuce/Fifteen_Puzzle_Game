@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         initializeGrid();
         gamesPlayed++;
         saveGameData();
+        startChronometer();
     }
 
     private void initGame() {
@@ -186,9 +187,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void onTileClick(int row, int col) {
 
-        if (moveCount == 0) {
-            startChronometer();
-        }
         // Attempt to move the tile at the specified row and column
         if (!isPaused) {  // Check if the game is not paused
             if (game.moveTile(row, col)) {
@@ -323,7 +321,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e("MainActivity", "Chronometer is null. Check your layout file.");
         }
-
         updateUI();
         resumeGame();
     }
