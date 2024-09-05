@@ -12,14 +12,14 @@ import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.util.Locale;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private Button[][] buttons;
     private GridLayout gridLayout;
 
-    //  Game statistics variables
+    // Game statistics variables
     private int gamesPlayed;
     private int gamesWon;
     private double winPercentage;
@@ -95,17 +95,15 @@ public class MainActivity extends AppCompatActivity {
         buttonRestart.setOnClickListener(this::restartGame);
     }
 
+    // Initialize game (from saved state or new game)
     private void initGame(Bundle savedInstanceState) {
         Intent intent = getIntent();
         int gridSize = intent.getIntExtra("numButtonRows", 4);
-        boolean restoreGame = intent.getBooleanExtra("restoreGame", false);
 
         if (savedInstanceState != null) {
             restoreGameStateFromBundle(savedInstanceState);
-        } else if (restoreGame) {
-            checkForPreviousGameOrStartNew(gridSize);
         } else {
-            startNewGame(gridSize);
+            checkForPreviousGameOrStartNew(gridSize);
         }
     }
 
@@ -114,12 +112,27 @@ public class MainActivity extends AppCompatActivity {
         String gameBoardJson = prefs.getString(PREFS_BOARD_KEY + gridSize, null);
 
         if (gameBoardJson != null) {
-            new AlertDialog.Builder(this).setTitle("Continue Previous Game?").setMessage("Would you like to continue your previous game or start a new one?").setPositiveButton("Continue", (dialog, which) -> restoreGameStateFromJson(gameBoardJson)).setNegativeButton("New Game", (dialog, which) -> {
+            PuzzleGame game = PuzzleGame.fromJson(gameBoardJson);
+
+            if (game != null && !game.isGameFinished()) {
+                new AlertDialog.Builder(this).setTitle("Continue Previous Game?").setMessage("You have an unfinished game. Continue or start a new one?").setPositiveButton("Continue", (dialog, which) -> restoreGameStateFromJson(gameBoardJson)).setNegativeButton("New Game", (dialog, which) -> {
+                    deleteSavedGameState(gridSize);
+                    startNewGame(gridSize);
+                }).show();
+            } else {
                 startNewGame(gridSize);
-            }).show();
+            }
         } else {
             startNewGame(gridSize);
         }
+    }
+
+    private void deleteSavedGameState(int gridSize) {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove(PREFS_BOARD_KEY + gridSize);
+        editor.apply();
+        Log.d("MainActivity", "Saved game state deleted for grid size " + gridSize);
     }
 
     private void restoreGameStateFromJson(String gameBoardJson) {
@@ -130,22 +143,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
         moveCount = prefs.getInt("moveCount", 0);
         pauseOffset = prefs.getLong("pauseOffset", 0);
         isPaused = prefs.getBoolean("isPaused", false);
 
-        loadStatistics();
         initializeGrid();
         updateUI();
-        togglePause();
 
-        Log.d("MainActivity", "Game board and stats restored.");
+        if (isPaused) {
+            pauseGame();
+        } else {
+            resumeGame();
+        }
     }
 
-
     private void startNewGame(int gridSize) {
-
         clearBoardState();
         game = new PuzzleGame(gridSize);
 
@@ -157,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
         updateUI();
         resumeGame();
     }
-
 
     private void initializeGrid() {
         int gridSize = game.getGridSize();
@@ -207,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadStatistics() {
-
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         gamesPlayed = prefs.getInt("gamesPlayed", 0);
@@ -223,6 +233,8 @@ public class MainActivity extends AppCompatActivity {
         if (!isPaused && game.moveTiles(row, col)) {
             moveCount++;
             updateUI();
+            saveBoardState();
+            saveGameStatistics();
             if (game.isSolved()) {
                 handleGameWin();
             }
@@ -232,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI() {
         updateTiles();
         updateMoveCounter();
-        updateChronometer();
+        chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset); // Reset the visual timer
     }
 
     private void updateTiles() {
@@ -254,30 +266,27 @@ public class MainActivity extends AppCompatActivity {
         moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
     }
 
-    private void updateChronometer() {
-        if (isPaused) {
-            chronometer.stop();
-        } else {
-            chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
-            chronometer.start();
-        }
+    private void pauseChronometer() {
+        pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
+        chronometer.stop();
+    }
+
+    private void resumeChronometer() {
+        chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
+        chronometer.start();
     }
 
     private void handleGameWin() {
         pauseGame();
-
         calculateGameStatistics();
-        clearBoardState();
+        clearBoardState();  // Ensure old game data is cleared
+        game = null;
 
-        game = null;  // precaution
-
-        new AlertDialog.Builder(this, R.style.CustomDialogTheme).setTitle("Congratulations!").setMessage("You've solved the puzzle. What would you like to do next?").setPositiveButton("Play Again", (dialog, which) -> restartGame(null)).setNegativeButton("Go to Menu", (dialog, which) -> goToMenuWithoutSaving()).show();
+        new AlertDialog.Builder(this, R.style.CustomDialogTheme).setTitle("Congratulations!").setMessage("You've solved the puzzle. What would you like to do next?").setPositiveButton("Play Again", (dialog, which) -> restartGame(null)).setNegativeButton("Go to Menu", (dialog, which) -> goToMenu()).show();
     }
 
-
     private void showStatistics() {
-        pauseGame();  // Pause the game when showing statistics
-
+        pauseGame();
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int gridSize = game.getGridSize();
         int currentGamesPlayed = prefs.getInt("gamesPlayed_" + gridSize, 0);
@@ -287,10 +296,10 @@ public class MainActivity extends AppCompatActivity {
         int currentBestMoveCount = prefs.getInt("bestMoveCount_" + gridSize, 0);
 
         String stats = String.format(Locale.getDefault(), "Current Grid Size: %dx%d\nGames Played: %d\nGames Won: %d\nWin Percentage: %.2f%%\nBest Time: %s\nBest Move Count: %d", gridSize, gridSize, currentGamesPlayed, currentGamesWon, currentWinPercentage, formatTime(currentBestTime), currentBestMoveCount);
+
         new AlertDialog.Builder(this, R.style.CustomDialogTheme).setTitle("Current Game Statistics").setMessage(stats).setPositiveButton("View All Statistics", (dialog, which) -> launchStatisticsActivity()).setNegativeButton("Close", (dialog, which) -> resumeGame()).setCancelable(false).show();
     }
 
-    // Helper to format the best time
     private String formatTime(long timeInMillis) {
         if (timeInMillis == Long.MAX_VALUE) {
             return "N/A";
@@ -300,10 +309,9 @@ public class MainActivity extends AppCompatActivity {
         return String.format(Locale.US, "%02d:%02d", minutes, seconds);
     }
 
-
     private void launchStatisticsActivity() {
         Intent intent = new Intent(this, StatisticsActivity.class);
-        intent.putExtra("prefsName", PREFS_NAME);  // Pass the SharedPreferences name
+        intent.putExtra("prefsName", PREFS_NAME);
         startActivity(intent);
     }
 
@@ -321,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
     private void clearBoardState() {
         if (game == null) {
             Log.e("MainActivity", "PuzzleGame instance is null. Cannot clear board state.");
-            return;  // Prevent further execution if game is not initialized
+            return;
         }
 
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -329,7 +337,6 @@ public class MainActivity extends AppCompatActivity {
 
         editor.remove(PREFS_BOARD_KEY + game.getGridSize());
         editor.apply();
-
         Log.d("MainActivity", "Cleared saved game board data for grid size " + game.getGridSize());
     }
 
@@ -370,12 +377,6 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private void goToMenuWithoutSaving() {
-        Intent intent = new Intent(this, MenuActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
     private void restartGame(View view) {
         startNewGame(game.getGridSize());
     }
@@ -389,24 +390,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void pauseGame() {
-        if (!isPaused) {
-            chronometer.stop();
-            pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
-            isPaused = true;
-
-            saveBoardState();
-            saveGameStatistics();
-            updatePauseButtonIcon(R.drawable.ic_play);  // Change to play icon
-        }
+        isPaused = true;
+        pauseChronometer();
+        updatePauseButtonIcon(R.drawable.ic_play);
     }
 
     private void resumeGame() {
-        if (isPaused) {
-            chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
-            chronometer.start();
-            isPaused = false;
-            updatePauseButtonIcon(R.drawable.ic_pause);  // Change back to pause icon
-        }
+        isPaused = false;
+        resumeChronometer();
+        updatePauseButtonIcon(R.drawable.ic_pause);
     }
 
     private void updatePauseButtonIcon(int iconResId) {
@@ -422,9 +414,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        // Save game state to Bundle (JSON format)
         outState.putString("gameStateJson", game.toJson());
         outState.putInt("moveCount", moveCount);
+        outState.putLong("chronometerBase", chronometer.getBase());
         outState.putLong("pauseOffset", pauseOffset);
         outState.putBoolean("isPaused", isPaused);
     }
@@ -432,30 +424,42 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-
         restoreGameStateFromBundle(savedInstanceState);
+
+        chronometer.setBase(savedInstanceState.getLong("chronometerBase"));
+        isPaused = savedInstanceState.getBoolean("isPaused", false);
+        if (isPaused) {
+            pauseChronometer();
+        } else {
+            resumeChronometer();
+        }
     }
 
     private void restoreGameStateFromBundle(Bundle savedInstanceState) {
         String gameStateJson = savedInstanceState.getString("gameStateJson");
+
         if (gameStateJson != null) {
             game = PuzzleGame.fromJson(gameStateJson);
-            if (game == null) {
-                Log.e("MainActivity", "Failed to restore PuzzleGame from JSON.");
-                return;
-            }
+
+            initializeGrid();
+            updateUI();
         } else {
-            Log.e("MainActivity", "Game state JSON is null. Starting new game.");
-            return;  // Handle the case where the JSON is missing
+            Log.e("MainActivity", "Game state JSON is null. Starting a new game.");
+            startNewGame(game.getGridSize());
         }
-
-        moveCount = savedInstanceState.getInt("moveCount", 0);
-        pauseOffset = savedInstanceState.getLong("pauseOffset", 0);
-        isPaused = savedInstanceState.getBoolean("isPaused", false);
-
-        initializeGrid();
-        updateUI();
-        togglePause();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveBoardState();
+        saveGameStatistics();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        saveBoardState();
+        saveGameStatistics();
+    }
 }

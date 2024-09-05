@@ -2,21 +2,15 @@ package com.example.fifteenpuzzlegame;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fifteenpuzzlegame.databinding.ActivityMenuBinding;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
-
 public class MenuActivity extends AppCompatActivity {
 
     private ActivityMenuBinding binding;
-    private int numButtonRows;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,65 +18,27 @@ public class MenuActivity extends AppCompatActivity {
 
         binding = ActivityMenuBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Setup toolbar and menu buttons
         setSupportActionBar(binding.toolbarMenu);
-
-        if (savedInstanceState != null) {
-            numButtonRows = savedInstanceState.getInt("numButtonRows", 4); // Default to 4x4
-        } else {
-            numButtonRows = 4; // Default grid size
-        }
-
-        setFAB();
-        setMenuButtons();
+        initializeMenuButtons();
+        initializeFAB();
     }
 
-    private void setMenuButtons() {
-        ArrayList<Button> buttons = new ArrayList<>();
-        buttons.add(findViewById(R.id.grid_size_button_3x3));
-        buttons.add(findViewById(R.id.grid_size_button_4x4));
-        buttons.add(findViewById(R.id.grid_size_button_5x5));
-
-        View.OnClickListener onClickListener = this::onButtonClick;
-        for (Button button : buttons) {
-            button.setOnClickListener(onClickListener);
-        }
+    private void initializeMenuButtons() {
+        binding.gridSizeButton3x3.setOnClickListener(view -> launchGame(3));
+        binding.gridSizeButton4x4.setOnClickListener(view -> launchGame(4));
+        binding.gridSizeButton5x5.setOnClickListener(view -> launchGame(5));
     }
 
-    private void setFAB() {
-        binding.fab.setOnClickListener(view -> Snackbar.make(view,
-                        "Fifteen Game Puzzle by \nJoseph Guindi & Yehoshua Dusowitz",
-                        Snackbar.LENGTH_LONG)
-                .setAnchorView(view)
-                .setAction("Action", null).show());
+    private void initializeFAB() {
+        binding.fab.setOnClickListener(view -> Snackbar.make(view, getString(R.string.fab_message), Snackbar.LENGTH_LONG).setAnchorView(view).setAction("Action", null).show());
     }
 
-    private void onButtonClick(View view) {
-        int bClicked = view.getId();
-
-        if (bClicked == R.id.grid_size_button_3x3) {
-            numButtonRows = 3;
-        } else if (bClicked == R.id.grid_size_button_4x4) {
-            numButtonRows = 4;
-        } else if (bClicked == R.id.grid_size_button_5x5) {
-            numButtonRows = 5;
-        }
-
+    // Launch the game with the specified grid size
+    private void launchGame(int gridSize) {
         Intent intent = new Intent(this, MainActivity.class);
-
-        intent.putExtra("numButtonRows", numButtonRows);
-
+        intent.putExtra("numButtonRows", gridSize);    // Pass the selected grid size to MainActivity
         startActivity(intent);
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("numButtonRows", numButtonRows);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        numButtonRows = savedInstanceState.getInt("numButtonRows", 4);
     }
 }

@@ -1,0 +1,70 @@
+<resources>
+
+    <!-- Style for the grid size buttons -->
+    <style name="GridSizeButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">@dimen/button_selection_width</item>
+        <item name="android:layout_height">@dimen/button_selection_height</item>
+        <item name="android:textSize">@dimen/button_selection_text_size</item>
+        <item name="android:textColor">@color/md_theme_onPrimaryContainer</item>
+        <item name="android:backgroundTint">@color/md_theme_primaryContainer</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <!-- Style for CardView components -->
+    <style name="CardViewStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/md_theme_surface</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">12dp</item>
+        <!-- Optional background gradient, ensure it contrasts with the card's background color -->
+        <item name="android:background">@drawable/card_background_gradient</item>
+    </style>
+
+    <!-- Style for ImageButtons inside CardViews -->
+    <style name="ImageButtonStyle" parent="Widget.MaterialComponents.TimePicker.ImageButton">
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:tint">@color/md_theme_onPrimaryContainer</item>
+    </style>
+
+    <!-- Custom dialog theme -->
+    <style name="CustomDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">
+        <item name="android:background">@color/md_theme_surface</item>
+        <item name="android:textColorPrimary">@color/md_theme_onSurface</item>
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
+
+    <!-- BottomAppBar Style -->
+    <style name="BottomAppBarStyle" parent="Widget.MaterialComponents.BottomAppBar">
+        <item name="backgroundTint">@color/md_theme_primaryContainer</item>
+        <item name="fabCradleMargin">10dp</item>
+        <item name="fabCradleRoundedCornerRadius">10dp</item>
+        <item name="fabCradleVerticalOffset">10dp</item>
+    </style>
+
+    <!-- FloatingActionButton Style -->
+    <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/md_theme_primaryContainer</item>
+        <item name="fabSize">normal</item>
+    </style>
+
+    <!-- Style for Primary Text in Statistics -->
+    <style name="TextViewStatistics.PrimaryTextColor" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/md_theme_onBackground</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- Style for Primary Text in Statistics with Bold Text -->
+    <style name="TextViewStatistics.PrimaryTextColor.Bold" parent="TextViewStatistics.PrimaryTextColor">
+        <item name="android:textColor">@color/md_theme_onBackground</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>

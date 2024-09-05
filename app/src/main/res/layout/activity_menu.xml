@@ -10,18 +10,19 @@
         android:id="@+id/toolbar_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/custom_gray"
+        android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
         app:contentInsetStartWithNavigation="0dp"
-        app:title="Select Grid Size"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/select_grid_size"
         app:titleCentered="true"
-        app:titleTextColor="@android:color/white"
-        tools:ignore="MissingConstraints" />
+        app:titleTextColor="?attr/colorOnPrimary" />
 
     <LinearLayout
+        android:id="@+id/linear_layout_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -34,16 +35,19 @@
         <Button
             android:id="@+id/grid_size_button_3x3"
             style="@style/GridSizeButtonStyle"
+            android:contentDescription="@string/grid_size_3x3_desc"
             android:text="@string/grid_size_3x3" />
 
         <Button
             android:id="@+id/grid_size_button_4x4"
             style="@style/GridSizeButtonStyle"
+            android:contentDescription="@string/grid_size_4x4_desc"
             android:text="@string/grid_size_4x4" />
 
         <Button
             android:id="@+id/grid_size_button_5x5"
             style="@style/GridSizeButtonStyle"
+            android:contentDescription="@string/grid_size_5x5_desc"
             android:text="@string/grid_size_5x5" />
     </LinearLayout>
 
@@ -52,11 +56,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:backgroundTint="?attr/colorPrimary"
         android:contentDescription="@string/about"
         android:src="@drawable/ic_baseline_info_24"
+        android:tint="?attr/colorOnPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tooltipText="About" />
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

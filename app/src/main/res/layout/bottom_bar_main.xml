@@ -1,79 +1,67 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.bottomappbar.BottomAppBar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottom_app_bar"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:backgroundTint="@color/md_theme_primary"
+    tools:ignore="BottomAppBar">
 
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottom_app_bar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:backgroundTint="@android:color/darker_gray"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:ignore="BottomAppBar"
-        tools:showIn="@layout/activity_main">
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Home Button -->
+        <ImageButton
+            android:id="@+id/button_home"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingHorizontal="8dp">
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_menu"
+            android:padding="16dp"
+            android:src="@drawable/ic_home"
+            app:tint="@color/md_theme_onPrimary" />
 
-            <!-- Home Button inside CardView -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_home"
-                style="@style/CardViewStyle">
+        <!-- Pause Button -->
+        <ImageButton
+            android:id="@+id/button_pause"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_pause"
+            android:padding="16dp"
+            android:src="@drawable/ic_pause"
+            app:tint="@color/md_theme_onPrimary" />
 
-                <ImageButton
-                    android:id="@+id/button_home"
-                    style="@style/ImageButtonStyle"
-                    android:contentDescription="@string/action_menu"
-                    android:src="@drawable/ic_home" />
-            </androidx.cardview.widget.CardView>
+        <!-- Restart Button -->
+        <ImageButton
+            android:id="@+id/button_restart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_restart"
+            android:padding="16dp"
+            android:src="@drawable/ic_restart"
+            app:tint="@color/md_theme_onPrimary" />
 
-            <!-- Pause Button inside CardView -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_pause"
-                style="@style/CardViewStyle"
-                android:layout_marginStart="8dp">
+        <!-- Statistics Button -->
+        <ImageButton
+            android:id="@+id/button_stats"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_stats"
+            android:padding="16dp"
+            android:src="@drawable/ic_stats"
+            app:tint="@color/md_theme_onPrimary" />
+    </LinearLayout>
 
-                <ImageButton
-                    android:id="@+id/button_pause"
-                    style="@style/ImageButtonStyle"
-                    android:contentDescription="@string/action_pause"
-                    android:src="@drawable/ic_pause" />
-            </androidx.cardview.widget.CardView>
-
-            <!-- Restart Button inside CardView -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_restart"
-                style="@style/CardViewStyle"
-                android:layout_marginStart="8dp">
-
-                <ImageButton
-                    android:id="@+id/button_restart"
-                    style="@style/ImageButtonStyle"
-                    android:contentDescription="@string/action_restart"
-                    android:src="@drawable/ic_restart" />
-            </androidx.cardview.widget.CardView>
-
-            <!-- Statistics Button inside CardView -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_stats"
-                style="@style/CardViewStyle"
-                android:layout_marginStart="8dp">
-
-                <ImageButton
-                    android:id="@+id/button_stats"
-                    style="@style/ImageButtonStyle"
-                    android:contentDescription="@string/action_stats"
-                    android:src="@drawable/ic_stats" />
-            </androidx.cardview.widget.CardView>
-
-        </LinearLayout>
-
-    </com.google.android.material.bottomappbar.BottomAppBar>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.bottomappbar.BottomAppBar>

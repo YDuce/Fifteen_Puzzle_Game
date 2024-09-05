@@ -3,4 +3,5 @@
     <dimen name="button_selection_width">200dp</dimen>
     <dimen name="button_selection_height">60dp</dimen>
     <dimen name="button_selection_text_size">14sp</dimen>
+    <dimen name="default_activity_margin">16dp</dimen>
 </resources>

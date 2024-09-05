@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <size android:height="1dp"/> <!-- Height of the divider -->
+    <solid android:color="@color/md_theme_onBackground"/> <!-- Color of the divider -->
+</shape>

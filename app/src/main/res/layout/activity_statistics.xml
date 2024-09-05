@@ -1,76 +1,298 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/darker_gray"
-    android:orientation="vertical"
-    android:paddingStart="16dp"
-    android:paddingTop="16dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="16dp">
+    android:background="@color/custom_gray"
+    tools:context=".StatisticsActivity">
 
+    <!-- Toolbar with full width and centered title -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar_statistics"
+        style="@style/TextAppearance.Material3.ActionBar.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/darker_gray"
+        android:background="@color/md_theme_primary"
         android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
-        app:contentInsetStartWithNavigation="0dp"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="Statistics"
-        app:titleTextColor="@android:color/white" />
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/statistics_title"
+        app:titleCentered="true"
+        app:titleTextColor="@color/md_theme_onPrimary" />
 
-    <TextView
-        android:id="@+id/games_played"
+    <!-- TableLayout for statistics -->
+    <TableLayout
+        android:id="@+id/table_statistics"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="@string/games_played"
-        android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/custom_gray"
+        android:divider="@drawable/divider"
+        android:gravity="center"
+        android:padding="16dp"
+        android:showDividers="middle"
+        android:stretchColumns="1, 2, 3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_statistics">
 
-    <TextView
-        android:id="@+id/games_won"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="@string/games_won"
-        android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        <!-- Header Row for grid sizes -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
 
-    <TextView
-        android:id="@+id/win_percentage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="@string/win_percentage"
-        android:textColor="@android:color/white"
-        android:textSize="20sp" />
+            <TextView
+                style="@style/TextViewStatistics.PrimaryTextColor.Bold"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/grid_size"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/best_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="@string/best_time"
-        android:textColor="@android:color/white"
-        android:textSize="20sp" />
+            <TextView
+                style="@style/TextViewStatistics.PrimaryTextColor.Bold"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/gridSize3x3"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/best_move_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="@string/best_move_count"
-        android:textColor="@android:color/white"
-        android:textSize="20sp" />
-</LinearLayout>
+            <TextView
+                style="@style/TextViewStatistics.PrimaryTextColor.Bold"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/gridSize4x4"
+                android:textStyle="bold" />
+
+            <TextView
+                style="@style/TextViewStatistics.PrimaryTextColor.Bold"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/gridSize5x5"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <!-- Games Played Row -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                style="@style/TextViewStatistics.PrimaryTextColor.Bold"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/games_played" />
+
+            <TextView
+                android:id="@+id/tv_data_3x3_games_played"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/tv_data_4x4_games_played"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/tv_data_5x5_games_played"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0" />
+        </TableRow>
+
+        <!-- Games Won Row -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                style="@style/TextViewStatistics.PrimaryTextColor.Bold"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/games_won" />
+
+            <TextView
+                android:id="@+id/tv_data_3x3_games_won"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/tv_data_4x4_games_won"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/tv_data_5x5_games_won"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0" />
+        </TableRow>
+
+        <!-- Win Percentage Row -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                style="@style/TextViewStatistics.PrimaryTextColor.Bold"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/win_percentage" />
+
+            <TextView
+                android:id="@+id/tv_data_3x3_win_percentage"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0%" />
+
+            <TextView
+                android:id="@+id/tv_data_4x4_win_percentage"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0%" />
+
+            <TextView
+                android:id="@+id/tv_data_5x5_win_percentage"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0%" />
+        </TableRow>
+
+        <!-- Best Time Row -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                style="@style/TextViewStatistics.PrimaryTextColor.Bold"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/best_time" />
+
+            <TextView
+                android:id="@+id/tv_data_3x3_best_time"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="N/A" />
+
+            <TextView
+                android:id="@+id/tv_data_4x4_best_time"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="N/A" />
+
+            <TextView
+                android:id="@+id/tv_data_5x5_best_time"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="N/A" />
+        </TableRow>
+
+        <!-- Best Moves Row -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                style="@style/TextViewStatistics.PrimaryTextColor.Bold"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/best_moves" />
+
+            <TextView
+                android:id="@+id/tv_data_3x3_best_moves"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/tv_data_4x4_best_moves"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/tv_data_5x5_best_moves"
+                style="@style/TextViewStatistics.PrimaryTextColor"
+                android:layout_weight="1"
+                android:background="@drawable/table_cell_backround"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="0" />
+        </TableRow>
+
+    </TableLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
