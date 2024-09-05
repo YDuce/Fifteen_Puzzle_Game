@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:background="@color/md_theme_inversePrimary"
+        android:background="@color/custom_gray"
         android:columnCount="4"
         android:padding="16dp"
         android:rowCount="4"
