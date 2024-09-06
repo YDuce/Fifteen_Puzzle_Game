@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
         clearBoardState();  // Ensure old game data is cleared
         game = null;
 
-        new AlertDialog.Builder(this, R.style.CustomDialogTheme).setTitle("Congratulations!").setMessage("You've solved the puzzle. What would you like to do next?").setPositiveButton("Play Again", (dialog, which) -> restartGame(null)).setNegativeButton("Go to Menu", (dialog, which) -> goToMenu()).show();
+        new AlertDialog.Builder(this, R.style.CustomDialogTheme).setTitle("Congratulations!").setMessage("You've solved the puzzle. What would you like to do next?").setPositiveButton("Play Again", (dialog, which) -> startNewGame(game.getGridSize())).setNegativeButton("Go to Menu", (dialog, which) -> goToMenu()).show();
     }
 
     private void showStatistics() {
