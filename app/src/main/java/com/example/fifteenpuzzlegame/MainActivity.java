@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.GridLayout;
@@ -29,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private PuzzleGame game;
     private Button[][] buttons;
     private GridLayout gridLayout;
+    private int gridSize;
 
     // Game statistics variables
     private int gamesPlayed;
@@ -92,22 +92,22 @@ public class MainActivity extends AppCompatActivity {
         buttonHome.setOnClickListener(v -> goToMenu());
         buttonPause.setOnClickListener(v -> togglePause());
         buttonStats.setOnClickListener(v -> showStatistics());
-        buttonRestart.setOnClickListener(this::restartGame);
+        buttonRestart.setOnClickListener(view -> startNewGame());
     }
 
     // Initialize game (from saved state or new game)
     private void initGame(Bundle savedInstanceState) {
         Intent intent = getIntent();
-        int gridSize = intent.getIntExtra("numButtonRows", 4);
+        gridSize = intent.getIntExtra("numButtonRows", 4);
 
         if (savedInstanceState != null) {
             restoreGameStateFromBundle(savedInstanceState);
         } else {
-            checkForPreviousGameOrStartNew(gridSize);
+            checkForPreviousGameOrStartNew();
         }
     }
 
-    private void checkForPreviousGameOrStartNew(int gridSize) {
+    private void checkForPreviousGameOrStartNew() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         String gameBoardJson = prefs.getString(PREFS_BOARD_KEY + gridSize, null);
 
@@ -116,18 +116,18 @@ public class MainActivity extends AppCompatActivity {
 
             if (game != null && !game.isGameFinished()) {
                 new AlertDialog.Builder(this).setTitle("Continue Previous Game?").setMessage("You have an unfinished game. Continue or start a new one?").setPositiveButton("Continue", (dialog, which) -> restoreGameStateFromJson(gameBoardJson)).setNegativeButton("New Game", (dialog, which) -> {
-                    deleteSavedGameState(gridSize);
-                    startNewGame(gridSize);
+                    deleteSavedGameState();
+                    startNewGame();
                 }).show();
             } else {
-                startNewGame(gridSize);
+                startNewGame();
             }
         } else {
-            startNewGame(gridSize);
+            startNewGame();
         }
     }
 
-    private void deleteSavedGameState(int gridSize) {
+    private void deleteSavedGameState() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.remove(PREFS_BOARD_KEY + gridSize);
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startNewGame(int gridSize) {
+    private void startNewGame() {
         clearBoardState();
         game = new PuzzleGame(gridSize);
 
@@ -171,12 +171,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeGrid() {
-        int gridSize = game.getGridSize();
+        gridSize = game.getGridSize();
         buttons = new Button[gridSize][gridSize];
         gridLayout.setRowCount(gridSize);
         gridLayout.setColumnCount(gridSize);
 
-        int buttonSize = calculateButtonSize(gridSize);
+        int buttonSize = calculateButtonSize();
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 createButton(i, j, buttonSize);
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private int calculateButtonSize(int gridSize) {
+    private int calculateButtonSize() {
         int totalMargin = 10 * (gridSize + 1);
         int availableWidth = getResources().getDisplayMetrics().widthPixels - totalMargin;
         int availableHeight = getResources().getDisplayMetrics().heightPixels - totalMargin;
@@ -282,13 +282,13 @@ public class MainActivity extends AppCompatActivity {
         clearBoardState();  // Ensure old game data is cleared
         game = null;
 
-        new AlertDialog.Builder(this, R.style.CustomDialogTheme).setTitle("Congratulations!").setMessage("You've solved the puzzle. What would you like to do next?").setPositiveButton("Play Again", (dialog, which) -> startNewGame(game.getGridSize())).setNegativeButton("Go to Menu", (dialog, which) -> goToMenu()).show();
+        new AlertDialog.Builder(this, R.style.CustomDialogTheme).setTitle("Congratulations!").setMessage("You've solved the puzzle. What would you like to do next?").setPositiveButton("Play Again", (dialog, which) -> startNewGame()).setNegativeButton("Go to Menu", (dialog, which) -> goToMenu()).show();
     }
 
     private void showStatistics() {
         pauseGame();
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        int gridSize = game.getGridSize();
+        gridSize = game.getGridSize();
         int currentGamesPlayed = prefs.getInt("gamesPlayed_" + gridSize, 0);
         int currentGamesWon = prefs.getInt("gamesWon_" + gridSize, 0);
         float currentWinPercentage = prefs.getFloat("winPercentage_" + gridSize, 0.0f);
@@ -345,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
 
         String gameStateJson = game.toJson();
-        editor.putString(PREFS_BOARD_KEY + game.getGridSize(), gameStateJson);
+        editor.putString(PREFS_BOARD_KEY + gridSize, gameStateJson);
         editor.putInt("moveCount", moveCount);
         editor.putLong("pauseOffset", pauseOffset);
         editor.putBoolean("isPaused", isPaused);
@@ -375,10 +375,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MenuActivity.class);
         startActivity(intent);
         finish();
-    }
-
-    private void restartGame(View view) {
-        startNewGame(game.getGridSize());
     }
 
     private void togglePause() {
@@ -445,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
             updateUI();
         } else {
             Log.e("MainActivity", "Game state JSON is null. Starting a new game.");
-            startNewGame(game.getGridSize());
+            startNewGame();
         }
     }
 
