@@ -457,6 +457,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        resumeGame();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         saveBoardState();
