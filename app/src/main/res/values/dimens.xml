@@ -1,7 +1,15 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="button_selection_width">200dp</dimen>
-    <dimen name="button_selection_height">60dp</dimen>
-    <dimen name="button_selection_text_size">14sp</dimen>
+    <dimen name="button_selection_height">80dp</dimen>
+    <dimen name="button_selection_text_size">20sp</dimen>
     <dimen name="default_activity_margin">16dp</dimen>
+
+
+    <dimen name="bottom_bar_height">48dp</dimen> <!-- Larger bottom bar height for portrait -->
+    <dimen name="toolbar_height">48dp</dimen> <!-- Larger toolbar height for portrait -->
+    <dimen name="icon_size">24dp</dimen> <!-- Larger icon size for portrait -->
+    <dimen name="text_size">12sp</dimen> <!-- Larger text size for portrait -->
+    <dimen name="button_padding">8dp</dimen> <!-- Larger button padding for portrait -->
+    <dimen name="grid_layout_margin">8dp</dimen>
 </resources>

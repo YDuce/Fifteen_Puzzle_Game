@@ -22,13 +22,16 @@
         <item name="android:background">@drawable/card_background_gradient</item>
     </style>
 
-    <!-- Style for ImageButtons inside CardViews -->
-    <style name="ImageButtonStyle" parent="Widget.MaterialComponents.TimePicker.ImageButton">
-        <item name="android:layout_width">56dp</item>
-        <item name="android:layout_height">56dp</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:tint">@color/md_theme_onPrimaryContainer</item>
+    <!-- Custom style for ImageButtons -->
+    <style name="ImageButtonStyle">
+        <item name="android:layout_width">@dimen/icon_size</item>
+        <item name="android:layout_height">@dimen/icon_size</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">@dimen/button_padding</item>
+        <item name="backgroundTint">@color/md_theme_onPrimary</item>
     </style>
+
 
     <!-- Custom dialog theme -->
     <style name="CustomDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">

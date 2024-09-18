@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.google.material)
     implementation(libs.support.annotations)
     implementation(libs.activity)
+    implementation(libs.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

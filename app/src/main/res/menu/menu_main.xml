@@ -1,10 +1,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.fifteenpuzzlegame.MainActivity">
-<!--    <item-->
-<!--        android:id="@+id/action_settings"-->
-<!--        android:orderInCategory="100"-->
-<!--        android:title="@string/action_settings"-->
-<!--        app:showAsAction="never" />-->
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Auto-Save Toggle -->
+    <item
+        android:id="@+id/action_autosave"
+        android:title="Auto-Save"
+        android:checkable="true"
+        app:showAsAction="never" />
+
+    <!-- Dark Mode Toggle -->
+    <item
+        android:id="@+id/action_darkmode"
+        android:title="Dark Mode"
+        android:checkable="true"
+        app:showAsAction="never" />
+
+    <!-- About Item -->
+    <item
+        android:id="@+id/action_about"
+        android:title="About"
+        app:showAsAction="never" />
+
 </menu>

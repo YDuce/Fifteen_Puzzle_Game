@@ -2,11 +2,9 @@ package com.example.fifteenpuzzlegame;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +12,7 @@ import java.util.List;
 
 public class PuzzleGame implements Parcelable {
 
+    // Parcelable.Creator for PuzzleGame
     public static final Creator<PuzzleGame> CREATOR = new Creator<PuzzleGame>() {
         @Override
         public PuzzleGame createFromParcel(Parcel in) {
@@ -25,7 +24,8 @@ public class PuzzleGame implements Parcelable {
             return new PuzzleGame[size];
         }
     };
-
+    // Gson instance (reuse for serialization/deserialization)
+    private static final Gson gson = new GsonBuilder().create();
     private final int gridSize;
     private final int[][] tiles;
     private int emptyRow;
@@ -49,42 +49,12 @@ public class PuzzleGame implements Parcelable {
         }
         this.emptyRow = in.readInt();
         this.emptyCol = in.readInt();
+        this.isGameFinished = in.readByte() != 0; // read boolean as byte
     }
 
-    // Convert JSON to PuzzleGame object
+    // Convert JSON string back to PuzzleGame object using Gson
     public static PuzzleGame fromJson(String jsonString) {
-        try {
-            JSONObject jsonObject = new JSONObject(jsonString);
-
-            // Validate required fields in the JSON
-            if (!jsonObject.has("gridSize") || !jsonObject.has("board")) {
-                Log.e("PuzzleGame", "Invalid JSON data: Missing gridSize or board");
-                return null;  // Return null if required fields are missing
-            }
-
-            int gridSize = jsonObject.getInt("gridSize");
-            PuzzleGame game = new PuzzleGame(gridSize);
-
-            // Set game parameters from JSON
-            game.emptyRow = jsonObject.getInt("emptyRow");
-            game.emptyCol = jsonObject.getInt("emptyCol");
-            game.isGameFinished = jsonObject.getBoolean("isGameFinished");
-
-            // Restore board state from JSON array
-            JSONArray boardArray = jsonObject.getJSONArray("board");
-            for (int i = 0; i < gridSize; i++) {
-                JSONArray rowArray = boardArray.getJSONArray(i);
-                for (int j = 0; j < gridSize; j++) {
-                    game.tiles[i][j] = rowArray.getInt(j);
-                }
-            }
-
-            return game;
-
-        } catch (JSONException e) {
-            Log.e("PuzzleGame", "Failed to parse JSON: " + e.getMessage());
-            return null;
-        }
+        return gson.fromJson(jsonString, PuzzleGame.class);
     }
 
     // Initialize tiles in ascending order with the last tile empty
@@ -141,7 +111,6 @@ public class PuzzleGame implements Parcelable {
         return false;
     }
 
-    // Move tiles horizontally
     private void moveHorizontally(int row, int col) {
         if (col > emptyCol) {
             for (int c = emptyCol; c < col; c++) {
@@ -154,7 +123,6 @@ public class PuzzleGame implements Parcelable {
         }
     }
 
-    // Move tiles vertically
     private void moveVertically(int row, int col) {
         if (row > emptyRow) {
             for (int r = emptyRow; r < row; r++) {
@@ -167,7 +135,6 @@ public class PuzzleGame implements Parcelable {
         }
     }
 
-    // Swap two tiles and update empty tile position
     private void swapTiles(int row1, int col1, int row2, int col2) {
         int temp = tiles[row1][col1];
         tiles[row1][col1] = tiles[row2][col2];
@@ -208,12 +175,8 @@ public class PuzzleGame implements Parcelable {
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 if (i == gridSize - 1 && j == gridSize - 1) {
-                    if (tiles[i][j] == 0) {
-                        isGameFinished = true;
-                        return true;
-                    }
+                    return tiles[i][j] == 0;
                 } else if (tiles[i][j] != expectedValue++) {
-                    isGameFinished = false;
                     return false;
                 }
             }
@@ -221,53 +184,7 @@ public class PuzzleGame implements Parcelable {
         return true;
     }
 
-    // Return whether the game is finished
-    public boolean isGameFinished() {
-        return isGameFinished;
-    }
-
-    // Get the value of a tile at a specific position
-    public int getTileValue(int row, int col) {
-        return tiles[row][col];
-    }
-
-    // Get the grid size of the puzzle
-    public int getGridSize() {
-        return gridSize;
-    }
-
-    // Convert the game state to a JSON string
-    public String toJson() {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("gridSize", gridSize);
-            jsonObject.put("emptyRow", emptyRow);
-            jsonObject.put("emptyCol", emptyCol);
-            jsonObject.put("isGameFinished", isGameFinished);
-
-            // Store board state as a JSON array
-            JSONArray boardArray = new JSONArray();
-            for (int i = 0; i < gridSize; i++) {
-                JSONArray rowArray = new JSONArray();
-                for (int j = 0; j < gridSize; j++) {
-                    rowArray.put(tiles[i][j]);
-                }
-                boardArray.put(rowArray);
-            }
-            jsonObject.put("board", boardArray);
-
-            // Add metadata for future compatibility
-            jsonObject.put("version", 1);
-            jsonObject.put("timestamp", System.currentTimeMillis());
-
-        } catch (JSONException e) {
-            Log.e("PuzzleGame", "Failed to convert game state to JSON: " + e.getMessage());
-            return "{}";  // Return an empty JSON object instead of null to avoid app crashes
-        }
-        return jsonObject.toString();
-    }
-
-    // Parcelable implementation to write to Parcel
+    // Parcelable methods
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(gridSize);
@@ -276,11 +193,41 @@ public class PuzzleGame implements Parcelable {
         }
         dest.writeInt(emptyRow);
         dest.writeInt(emptyCol);
+        dest.writeByte((byte) (isGameFinished ? 1 : 0));  // boolean as byte
     }
 
-    // Parcelable implementation
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    // Convert PuzzleGame to JSON string using Gson
+    public String toJson() {
+        return gson.toJson(this);
+    }
+
+    // Getters
+    public int[][] getTiles() {
+        return tiles;
+    }
+
+    public int getTileValue(int row, int col) {
+        return tiles[row][col];
+    }
+
+    public int getEmptyRow() {
+        return emptyRow;
+    }
+
+    public int getEmptyCol() {
+        return emptyCol;
+    }
+
+    public boolean isGameFinished() {
+        return isGameFinished;
+    }
+
+    public int getGridSize() {
+        return gridSize;
     }
 }

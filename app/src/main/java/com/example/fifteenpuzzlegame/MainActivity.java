@@ -1,10 +1,11 @@
 package com.example.fifteenpuzzlegame;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.GridLayout;
@@ -14,16 +15,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
-
-import java.util.Locale;
+import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final String PREFS_NAME = "GameStatsPrefs";
-    private static final String PREFS_BOARD_KEY = "SavedBoardState";
 
     private PuzzleGame game;
     private Button[][] buttons;
@@ -35,22 +33,28 @@ public class MainActivity extends AppCompatActivity {
     private int gamesWon;
     private double winPercentage;
     private int moveCount;
-    private int bestMoveCount;
     private long bestTime = Long.MAX_VALUE;
+    private int bestMoveCount;
 
     private TextView moveCounterTextView;
     private Chronometer chronometer;
     private boolean isPaused;
     private long pauseOffset;
 
+    private GameStateManager gameStateManager;
+    private Gson gson;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        gameStateManager = new GameStateManager(this);  // Initialize GameStateManager
+        gson = new Gson(); // Initialize Gson object for game state handling
+
         setupUI();
-        loadStatistics();
-        initGame(savedInstanceState);
+        loadStatistics();  // Load statistics using GameStateManager
+        initGame(savedInstanceState);  // Initialize game based on saved state
     }
 
     private void setupUI() {
@@ -95,10 +99,73 @@ public class MainActivity extends AppCompatActivity {
         buttonRestart.setOnClickListener(view -> startNewGame());
     }
 
+    // Load game statistics using GameStateManager
+    private void loadStatistics() {
+        gamesPlayed = gameStateManager.getGamesPlayed(gridSize);
+        gamesWon = gameStateManager.getGamesWon(gridSize);
+        winPercentage = gameStateManager.getWinPercentage(gridSize);
+        bestTime = gameStateManager.getBestTime(gridSize);
+        bestMoveCount = gameStateManager.getBestMoveCount(gridSize);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        // Retrieve preferences for Auto-Save and Dark Mode from GameStateManager
+        boolean isAutoSaveEnabled = gameStateManager.isAutoSaveEnabled();
+        boolean isDarkModeEnabled = gameStateManager.isDarkModeEnabled();
+
+        menu.findItem(R.id.action_autosave).setChecked(isAutoSaveEnabled);
+        menu.findItem(R.id.action_darkmode).setChecked(isDarkModeEnabled);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_about) {
+            showAboutDialog();  // Show the "About" dialog
+            return true;
+        } else if (itemId == R.id.action_autosave) {
+            toggleAutoSave(item);
+            return true;
+        } else if (itemId == R.id.action_darkmode) {
+            toggleDarkMode(item);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Toggle Auto-Save option
+    private void toggleAutoSave(MenuItem item) {
+        item.setChecked(!item.isChecked());
+        gameStateManager.setAutoSaveEnabled(item.isChecked());
+    }
+
+    // Toggle Dark Mode and apply it immediately
+    private void toggleDarkMode(MenuItem item) {
+        item.setChecked(!item.isChecked());
+        gameStateManager.setDarkModeEnabled(item.isChecked());
+        applyDarkMode(item.isChecked());
+    }
+
+    private void applyDarkMode(boolean isDarkMode) {
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+    }
+
+    private void showAboutDialog() {
+        new AlertDialog.Builder(this).setTitle("About the Game").setMessage("This is the Fifteen Puzzle Game.\nVersion 1.0\nEnjoy solving the puzzle!").setPositiveButton("OK", null).show();
+    }
+
     // Initialize game (from saved state or new game)
     private void initGame(Bundle savedInstanceState) {
-        Intent intent = getIntent();
-        gridSize = intent.getIntExtra("numButtonRows", 4);
+        gridSize = getIntent().getIntExtra("numButtonRows", 4);
 
         if (savedInstanceState != null) {
             restoreGameStateFromBundle(savedInstanceState);
@@ -108,57 +175,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkForPreviousGameOrStartNew() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String gameBoardJson = prefs.getString(PREFS_BOARD_KEY + gridSize, null);
+        PuzzleGame savedGame = gameStateManager.loadTemporaryGameState(gridSize);
 
-        if (gameBoardJson != null) {
-            PuzzleGame game = PuzzleGame.fromJson(gameBoardJson);
-
-            if (game != null && !game.isGameFinished()) {
-                new AlertDialog.Builder(this).setTitle("Continue Previous Game?").setMessage("You have an unfinished game. Continue or start a new one?").setPositiveButton("Continue", (dialog, which) -> restoreGameStateFromJson(gameBoardJson)).setNegativeButton("New Game", (dialog, which) -> {
-                    deleteSavedGameState();
-                    startNewGame();
-                }).show();
-            } else {
+        if (savedGame != null && !savedGame.isGameFinished()) {
+            new AlertDialog.Builder(this).setTitle("Continue Previous Game?").setMessage("You have an unfinished game. Continue or start a new one?").setPositiveButton("Continue", (dialog, which) -> restoreGameState(savedGame)).setNegativeButton("New Game", (dialog, which) -> {
+                gameStateManager.deleteTempGameState(gridSize);
                 startNewGame();
-            }
+            }).show();
         } else {
             startNewGame();
         }
     }
 
-    private void deleteSavedGameState() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.remove(PREFS_BOARD_KEY + gridSize);
-        editor.apply();
-        Log.d("MainActivity", "Saved game state deleted for grid size " + gridSize);
-    }
-
-    private void restoreGameStateFromJson(String gameBoardJson) {
-        game = PuzzleGame.fromJson(gameBoardJson);
-        if (game == null) {
-            Log.e("MainActivity", "Failed to restore PuzzleGame from JSON.");
-            return;
-        }
-
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        moveCount = prefs.getInt("moveCount", 0);
-        pauseOffset = prefs.getLong("pauseOffset", 0);
-        isPaused = prefs.getBoolean("isPaused", false);
+    private void restoreGameState(PuzzleGame savedGame) {
+        game = savedGame;
+        moveCount = gameStateManager.getMoveCount();
+        pauseOffset = gameStateManager.getPauseOffset();
+        isPaused = gameStateManager.isPaused();
 
         initializeGrid();
         updateUI();
-
-        if (isPaused) {
-            pauseGame();
-        } else {
-            resumeGame();
-        }
+        resumeGame();
     }
 
     private void startNewGame() {
-        clearBoardState();
+        gameStateManager.deleteTempGameState(gridSize);
         game = new PuzzleGame(gridSize);
 
         moveCount = 0;
@@ -217,24 +258,11 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(v -> onTileClick(row, col));
     }
 
-    private void loadStatistics() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
-        gamesPlayed = prefs.getInt("gamesPlayed", 0);
-        gamesWon = prefs.getInt("gamesWon", 0);
-        winPercentage = prefs.getFloat("winPercentage", 0.0f);
-        bestTime = prefs.getLong("bestTime", Long.MAX_VALUE);
-        bestMoveCount = prefs.getInt("bestMoveCount", 0);
-
-        Log.d("MainActivity", "Statistics loaded: Games Played=" + gamesPlayed + ", Games Won=" + gamesWon + ", Best Time=" + bestTime + ", Best Moves=" + bestMoveCount);
-    }
-
     private void onTileClick(int row, int col) {
         if (!isPaused && game.moveTiles(row, col)) {
             moveCount++;
             updateUI();
-            saveBoardState();
-            saveGameStatistics();
+            gameStateManager.saveTemporaryGameState(game, moveCount, pauseOffset, isPaused);
             if (game.isSolved()) {
                 handleGameWin();
             }
@@ -244,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI() {
         updateTiles();
         updateMoveCounter();
-        chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset); // Reset the visual timer
+        chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
     }
 
     private void updateTiles() {
@@ -266,52 +294,24 @@ public class MainActivity extends AppCompatActivity {
         moveCounterTextView.setText(getString(R.string.move_counter, moveCount));
     }
 
-    private void pauseChronometer() {
-        pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
-        chronometer.stop();
-    }
-
-    private void resumeChronometer() {
-        chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
-        chronometer.start();
-    }
-
     private void handleGameWin() {
         pauseGame();
         calculateGameStatistics();
-        clearBoardState();  // Ensure old game data is cleared
-        game = null;
+        gameStateManager.deleteTemporaryGameState(gridSize);  // Delete the temporary state (board, move count, etc.)
 
-        new AlertDialog.Builder(this, R.style.CustomDialogTheme).setTitle("Congratulations!").setMessage("You've solved the puzzle. What would you like to do next?").setPositiveButton("Play Again", (dialog, which) -> startNewGame()).setNegativeButton("Go to Menu", (dialog, which) -> goToMenu()).show();
+        new AlertDialog.Builder(this).setTitle("Congratulations!").setMessage("You've solved the puzzle. What would you like to do next?").setPositiveButton("Play Again", (dialog, which) -> startNewGame()).setNegativeButton("Go to Menu", (dialog, which) -> goToMenu()).show();
     }
 
     private void showStatistics() {
         pauseGame();
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        gridSize = game.getGridSize();
-        int currentGamesPlayed = prefs.getInt("gamesPlayed_" + gridSize, 0);
-        int currentGamesWon = prefs.getInt("gamesWon_" + gridSize, 0);
-        float currentWinPercentage = prefs.getFloat("winPercentage_" + gridSize, 0.0f);
-        long currentBestTime = prefs.getLong("bestTime_" + gridSize, Long.MAX_VALUE);
-        int currentBestMoveCount = prefs.getInt("bestMoveCount_" + gridSize, 0);
 
-        String stats = String.format(Locale.getDefault(), "Current Grid Size: %dx%d\nGames Played: %d\nGames Won: %d\nWin Percentage: %.2f%%\nBest Time: %s\nBest Move Count: %d", gridSize, gridSize, currentGamesPlayed, currentGamesWon, currentWinPercentage, formatTime(currentBestTime), currentBestMoveCount);
-
-        new AlertDialog.Builder(this, R.style.CustomDialogTheme).setTitle("Current Game Statistics").setMessage(stats).setPositiveButton("View All Statistics", (dialog, which) -> launchStatisticsActivity()).setNegativeButton("Close", (dialog, which) -> resumeGame()).setCancelable(false).show();
-    }
-
-    private String formatTime(long timeInMillis) {
-        if (timeInMillis == Long.MAX_VALUE) {
-            return "N/A";
-        }
-        int minutes = (int) (timeInMillis / 1000) / 60;
-        int seconds = (int) (timeInMillis / 1000) % 60;
-        return String.format(Locale.US, "%02d:%02d", minutes, seconds);
+        String stats = gameStateManager.getFormattedStatistics(gridSize);
+        new AlertDialog.Builder(this).setTitle("Current Game Statistics").setMessage(stats).setPositiveButton("View All Statistics", (dialog, which) -> launchStatisticsActivity()).setNegativeButton("Close", (dialog, which) -> resumeGame()).setCancelable(false).show();
     }
 
     private void launchStatisticsActivity() {
-        Intent intent = new Intent(this, StatisticsActivity.class);
-        intent.putExtra("prefsName", PREFS_NAME);
+        Intent intent = new Intent(MainActivity.this, StatisticsActivity.class);
+        intent.putExtra("prefsName", "GameStatsPrefs"); // Passing the shared preferences name
         startActivity(intent);
     }
 
@@ -323,51 +323,74 @@ public class MainActivity extends AppCompatActivity {
         if (currentTime < bestTime) bestTime = currentTime;
         if (moveCount < bestMoveCount || bestMoveCount == 0) bestMoveCount = moveCount;
 
-        saveGameStatistics();
+        gameStateManager.saveGameStatistics(gridSize, gamesPlayed, gamesWon, winPercentage, bestTime, bestMoveCount);
     }
 
-    private void clearBoardState() {
-        if (game == null) {
-            Log.e("MainActivity", "PuzzleGame instance is null. Cannot clear board state.");
-            return;
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("gameStateJson", gson.toJson(game));
+        outState.putInt("moveCount", moveCount);
+        outState.putLong("chronometerBase", chronometer.getBase());
+        outState.putLong("pauseOffset", pauseOffset);
+        outState.putBoolean("isPaused", isPaused);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        restoreGameStateFromBundle(savedInstanceState);
+
+        chronometer.setBase(savedInstanceState.getLong("chronometerBase"));
+        isPaused = savedInstanceState.getBoolean("isPaused", false);
+        if (isPaused) {
+            pauseChronometer();
+        } else {
+            resumeChronometer();
         }
-
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        editor.remove(PREFS_BOARD_KEY + game.getGridSize());
-        editor.apply();
-        Log.d("MainActivity", "Cleared saved game board data for grid size " + game.getGridSize());
     }
 
-    private void saveBoardState() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
+    private void restoreGameStateFromBundle(Bundle savedInstanceState) {
+        String gameStateJson = savedInstanceState.getString("gameStateJson");
 
-        String gameStateJson = game.toJson();
-        editor.putString(PREFS_BOARD_KEY + gridSize, gameStateJson);
-        editor.putInt("moveCount", moveCount);
-        editor.putLong("pauseOffset", pauseOffset);
-        editor.putBoolean("isPaused", isPaused);
-
-        editor.putInt("gamesPlayed", gamesPlayed);
-        editor.putInt("gamesWon", gamesWon);
-        editor.putFloat("winPercentage", (float) winPercentage);
-        editor.putLong("bestTime", bestTime);
-        editor.putInt("bestMoveCount", bestMoveCount);
-        editor.apply();
+        if (gameStateJson != null) {
+            game = gson.fromJson(gameStateJson, PuzzleGame.class);
+            initializeGrid();
+            updateUI();
+        } else {
+            Log.e("MainActivity", "Game state JSON is null. Starting a new game.");
+            startNewGame();
+        }
     }
 
-    private void saveGameStatistics() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
+    @Override
+    protected void onPause() {
+        super.onPause();
+        gameStateManager.saveTemporaryGameState(game, moveCount, pauseOffset, isPaused);
+        gameStateManager.saveGameStatistics(gridSize, gamesPlayed, gamesWon, winPercentage, bestTime, bestMoveCount);
+    }
 
-        editor.putInt("gamesPlayed", gamesPlayed);
-        editor.putInt("gamesWon", gamesWon);
-        editor.putFloat("winPercentage", (float) winPercentage);
-        editor.putLong("bestTime", bestTime);
-        editor.putInt("bestMoveCount", bestMoveCount);
-        editor.apply();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        resumeGame();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        gameStateManager.saveTemporaryGameState(game, moveCount, pauseOffset, isPaused);
+        gameStateManager.saveGameStatistics(gridSize, gamesPlayed, gamesWon, winPercentage, bestTime, bestMoveCount);
+    }
+
+    private void pauseChronometer() {
+        pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
+        chronometer.stop();
+    }
+
+    private void resumeChronometer() {
+        chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
+        chronometer.start();
     }
 
     private void goToMenu() {
@@ -404,64 +427,5 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e("MainActivity", "Pause button is null.");
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putString("gameStateJson", game.toJson());
-        outState.putInt("moveCount", moveCount);
-        outState.putLong("chronometerBase", chronometer.getBase());
-        outState.putLong("pauseOffset", pauseOffset);
-        outState.putBoolean("isPaused", isPaused);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        restoreGameStateFromBundle(savedInstanceState);
-
-        chronometer.setBase(savedInstanceState.getLong("chronometerBase"));
-        isPaused = savedInstanceState.getBoolean("isPaused", false);
-        if (isPaused) {
-            pauseChronometer();
-        } else {
-            resumeChronometer();
-        }
-    }
-
-    private void restoreGameStateFromBundle(Bundle savedInstanceState) {
-        String gameStateJson = savedInstanceState.getString("gameStateJson");
-
-        if (gameStateJson != null) {
-            game = PuzzleGame.fromJson(gameStateJson);
-
-            initializeGrid();
-            updateUI();
-        } else {
-            Log.e("MainActivity", "Game state JSON is null. Starting a new game.");
-            startNewGame();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        saveBoardState();
-        saveGameStatistics();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        resumeGame();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        saveBoardState();
-        saveGameStatistics();
     }
 }

@@ -4,7 +4,7 @@
     <string name="gridSize3x3">3 x 3</string>
     <string name="gridSize4x4">4 x 4</string>
     <string name="gridSize5x5">5 x 5</string>
-    <string name="about">About This App</string>
+    <string name="about">About</string>
     <string name="how_to_play">How to Play</string>
     <string name="menu">Menu</string>
     <string name="action_menu">action menu</string>
@@ -35,4 +35,7 @@
     <string name="grid_size_5x5_desc">grid size 5x5</string>
     <string name="back">back</string>
     <string name="grid_size">Grid Size</string>
+    <string name="move_counter_description">move counter</string>
+    <string name="time_label_description">timer</string>
+    <string name="chronometer_description">chronometer</string>
 </resources>

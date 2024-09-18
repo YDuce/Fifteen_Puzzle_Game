@@ -12,10 +12,9 @@ import java.util.Locale;
 
 public class StatisticsActivity extends AppCompatActivity {
 
-    private ActivityStatisticsBinding binding;
-
     // Define the grid sizes available
     private static final int[] GRID_SIZES = {3, 4, 5};
+    private ActivityStatisticsBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +26,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
         // Setup the toolbar and preferences
         setupToolbar();
-        loadStatistics();
+        loadStatistics();  // Fetching statistics from SharedPreferences
     }
 
     // Set up the toolbar with back navigation
@@ -39,16 +38,17 @@ public class StatisticsActivity extends AppCompatActivity {
         binding.toolbarStatistics.setNavigationOnClickListener(v -> onBackPressed());
     }
 
-    // Load statistics based on preferences passed through the intent
+    // Load statistics from SharedPreferences
     private void loadStatistics() {
+        // Retrieve the name of the shared preferences
         String prefsName = getIntent().getStringExtra("prefsName");
         if (prefsName != null) {
             SharedPreferences prefs = getSharedPreferences(prefsName, MODE_PRIVATE);
-            displayStatisticsForAllGridSizes(prefs);
+            displayStatisticsForAllGridSizes(prefs);  // Pass SharedPreferences to method
         }
     }
 
-    // Display statistics for all the grid sizes defined in GRID_SIZES
+    // Display statistics for all grid sizes defined in GRID_SIZES
     private void displayStatisticsForAllGridSizes(SharedPreferences prefs) {
         for (int gridSize : GRID_SIZES) {
             String[] statistics = getStatisticsForGridSize(prefs, gridSize);
@@ -58,6 +58,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
     // Fetch statistics from SharedPreferences for a specific grid size
     private String[] getStatisticsForGridSize(SharedPreferences prefs, int gridSize) {
+        // Use the grid size to fetch statistics for each size
         int gamesPlayed = prefs.getInt("gamesPlayed_" + gridSize, 0);
         int gamesWon = prefs.getInt("gamesWon_" + gridSize, 0);
         float winPercentage = prefs.getFloat("winPercentage_" + gridSize, 0.0f);
@@ -65,13 +66,7 @@ public class StatisticsActivity extends AppCompatActivity {
         int bestMoveCount = prefs.getInt("bestMoveCount_" + gridSize, 0);
 
         // Format the time and return the statistics as a string array
-        return new String[]{
-                String.valueOf(gamesPlayed),
-                String.valueOf(gamesWon),
-                String.format(Locale.getDefault(), "%.2f%%", winPercentage),
-                formatTime(bestTime),
-                String.valueOf(bestMoveCount)
-        };
+        return new String[]{String.valueOf(gamesPlayed), String.valueOf(gamesWon), String.format(Locale.getDefault(), "%.2f%%", winPercentage), formatTime(bestTime), String.valueOf(bestMoveCount)};
     }
 
     // Update TextViews for each grid size by setting the relevant statistics

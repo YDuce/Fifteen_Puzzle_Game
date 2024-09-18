@@ -4,18 +4,16 @@
     android:layout_height="match_parent"
     android:background="@color/custom_gray">
 
+    <!-- content_main.xml -->
     <GridLayout
         android:id="@+id/grid_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@color/custom_gray"
+        android:layout_margin="@dimen/grid_layout_margin"
         android:columnCount="4"
-        android:padding="16dp"
         android:rowCount="4"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />

@@ -1,48 +1,62 @@
-<com.google.android.material.appbar.MaterialToolbar
-    android:id="@+id/toolbar_main"
+<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/include_activity_toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/md_theme_primary"
-    android:elevation="4dp"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:fitsSystemWindows="true"
+    tools:showIn="@layout/activity_main">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="start|center_vertical"
-        android:layout_marginStart="16dp">
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar_main"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/custom_gray"
+        android:elevation="4dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
-        <TextView
-            android:id="@+id/move_counter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:text="@string/moves_zero"
-            android:textColor="@color/md_theme_onPrimaryContainer"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/time_label"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:fontFamily="monospace"
-            android:text="@string/time"
-            android:textColor="@color/md_theme_onPrimaryContainer"
-            android:textSize="16sp"
-            tools:ignore="RtlSymmetry" />
+            android:gravity="start|center_vertical"
+            android:orientation="horizontal">
 
-        <Chronometer
-            android:id="@+id/chronometer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:fontFamily="monospace"
-            android:textColor="@color/md_theme_onPrimaryContainer"
-            android:textSize="16sp" />
+            <TextView
+                android:id="@+id/move_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/move_counter_description"
+                android:fontFamily="monospace"
+                android:text="@string/moves_zero"
+                android:textColor="@color/md_theme_onPrimary"
+                android:textSize="16sp" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/time_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:contentDescription="@string/time_label_description"
+                android:fontFamily="monospace"
+                android:text="@string/time"
+                android:textColor="@color/md_theme_onPrimary"
+                android:textSize="16sp"
+                tools:ignore="RtlSymmetry" />
 
-</com.google.android.material.appbar.MaterialToolbar>
+            <Chronometer
+                android:id="@+id/chronometer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:contentDescription="@string/chronometer_description"
+                android:fontFamily="monospace"
+                android:format="%s"
+                android:textColor="@color/md_theme_onPrimary"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+</com.google.android.material.appbar.AppBarLayout>

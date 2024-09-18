@@ -3,27 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_app_bar"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:backgroundTint="@color/md_theme_primary"
+    android:layout_height="@dimen/bottom_bar_height"
+    android:backgroundTint="@color/custom_gray"
+    android:fitsSystemWindows="true"
     tools:ignore="BottomAppBar">
 
     <LinearLayout
+        android:id="@+id/custom_bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingHorizontal="8dp">
+        android:padding="@dimen/button_padding">
 
         <!-- Home Button -->
         <ImageButton
             android:id="@+id/button_home"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/icon_size"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/action_menu"
-            android:padding="16dp"
+            android:padding="@dimen/button_padding"
             android:src="@drawable/ic_home"
             app:tint="@color/md_theme_onPrimary" />
 
@@ -31,11 +31,10 @@
         <ImageButton
             android:id="@+id/button_pause"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/icon_size"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/action_pause"
-            android:padding="16dp"
+            android:padding="@dimen/button_padding"
             android:src="@drawable/ic_pause"
             app:tint="@color/md_theme_onPrimary" />
 
@@ -43,11 +42,10 @@
         <ImageButton
             android:id="@+id/button_restart"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/icon_size"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/action_restart"
-            android:padding="16dp"
+            android:padding="@dimen/button_padding"
             android:src="@drawable/ic_restart"
             app:tint="@color/md_theme_onPrimary" />
 
@@ -55,11 +53,10 @@
         <ImageButton
             android:id="@+id/button_stats"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/icon_size"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/action_stats"
-            android:padding="16dp"
+            android:padding="@dimen/button_padding"
             android:src="@drawable/ic_stats"
             app:tint="@color/md_theme_onPrimary" />
     </LinearLayout>
