@@ -4,21 +4,21 @@
     <!-- Auto-Save Toggle -->
     <item
         android:id="@+id/action_autosave"
-        android:title="Auto-Save"
         android:checkable="true"
+        android:title="@string/auto_save"
         app:showAsAction="never" />
 
     <!-- Dark Mode Toggle -->
     <item
         android:id="@+id/action_darkmode"
-        android:title="Dark Mode"
         android:checkable="true"
+        android:title="@string/dark_mode"
         app:showAsAction="never" />
 
     <!-- About Item -->
     <item
         android:id="@+id/action_about"
-        android:title="About"
+        android:title="@string/about"
         app:showAsAction="never" />
 
 </menu>

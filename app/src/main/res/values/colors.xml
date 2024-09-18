@@ -1,4 +1,15 @@
 <resources>
+
+    <color name="gridSizeButtonTextColor">@color/md_theme_tertiary</color> <!-- Same as tertiary color -->
+    <color name="gridSizeButtonBackgroundColor">#6D6B6A</color> <!-- Darker version of #B0AEAD -->
+    <color name="gridSizeButtonBorderColor">#5A5857</color> <!-- Slightly darker than background -->
+
+    <color name="tile_normal_color">#B0B0B0</color>
+    <color name="tile_normal_border_color">#A0A0A0</color>
+
+    <color name="tile_empty_color">#D0D0D0</color>
+    <color name="tile_empty_border_color">#C0C0C0</color>
+
     <color name="semi_transparent_gray">#CC2E2E2E</color>  <!-- 80% transparent gray -->
     <color name="custom_gray">#BEBEBE</color>
     <color name="md_theme_primary">#060505</color>
@@ -9,7 +20,7 @@
     <color name="md_theme_onSecondary">#FFFFFF</color>
     <color name="md_theme_secondaryContainer">#5D6164</color>
     <color name="md_theme_onSecondaryContainer">#FFFFFF</color>
-    <color name="md_theme_tertiary">#596061</color>
+    <color name="md_theme_tertiary">#BEBEBE</color>
     <color name="md_theme_onTertiary">#FFFFFF</color>
     <color name="md_theme_tertiaryContainer">#BAC1C2</color>
     <color name="md_theme_onTertiaryContainer">#2C3334</color>

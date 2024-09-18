@@ -1,7 +1,69 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.FifteenPuzzleGame" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<resources>
+
+    <!-- Base application theme with No Action Bar for night mode -->
+    <style name="Base.Theme.FifteenPuzzleGame.NoActionBar" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary color definitions for night mode -->
+        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
+
+        <!-- Secondary color definitions for night mode -->
+        <item name="colorSecondary">@color/md_theme_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
+
+        <!-- Background and Surface color definitions for night mode -->
+        <item name="android:colorBackground">@color/md_theme_background</item>
+        <item name="colorOnBackground">@color/md_theme_onBackground</item>
+        <item name="colorSurface">@color/md_theme_surface</item>
+        <item name="colorOnSurface">@color/md_theme_onSurface</item>
     </style>
+
+    <!-- App-specific theme with Action Bar for night mode -->
+    <style name="Base.Theme.FifteenPuzzleGame" parent="Theme.Material3.DayNight">
+        <!-- Same color definitions as NoActionBar for night mode -->
+        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
+
+        <!-- Secondary color definitions for night mode -->
+        <item name="colorSecondary">@color/md_theme_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
+
+        <!-- Background and Surface color definitions for night mode -->
+        <item name="android:colorBackground">@color/md_theme_background</item>
+        <item name="colorOnBackground">@color/md_theme_onBackground</item>
+        <item name="colorSurface">@color/md_theme_surface</item>
+        <item name="colorOnSurface">@color/md_theme_onSurface</item>
+
+    </style>
+
+    <style name="Theme.FifteenPuzzleGame" parent="Base.Theme.FifteenPuzzleGame" />
+
+    <style name="Theme.FifteenPuzzleGame.NoActionBar" parent="Base.Theme.FifteenPuzzleGame.NoActionBar" />
+
+    <!-- Theme for FloatingActionButton and BottomAppBar in night mode -->
+    <style name="Theme.Fab_Bottom_app_bar" parent="Base.Theme.FifteenPuzzleGame.NoActionBar">
+        <!-- Use appropriate color attributes from the night palette -->
+        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+
+        <!-- Surface colors for night mode -->
+        <item name="colorSurface">@color/md_theme_surface</item>
+        <item name="colorOnSurface">@color/md_theme_onSurface</item>
+    </style>
+
+    <style name="AppTheme.Fullscreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
 </resources>

@@ -5,7 +5,8 @@
         <!-- Primary color definitions -->
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item> <!-- Use primary container color -->
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer
+        </item> <!-- Use primary container color -->
         <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
 
         <!-- Secondary color definitions -->
@@ -15,10 +16,12 @@
         <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
 
         <!-- Background and Surface color definitions -->
-        <item name="android:colorBackground">@color/md_theme_primaryContainer</item> <!-- Set background to primary container color -->
+        <item name="android:colorBackground">@color/md_theme_primaryContainer
+        </item> <!-- Set background to primary container color -->
         <item name="colorOnBackground">@color/md_theme_onBackground</item>
         <item name="colorSurface">@color/md_theme_surface</item>
         <item name="colorOnSurface">@color/md_theme_onSurface</item>
+
     </style>
 
     <!-- App-specific theme with Action Bar (MainActivity) -->
@@ -26,7 +29,8 @@
         <!-- Same color definitions as NoActionBar -->
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item> <!-- Use primary container color -->
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer
+        </item> <!-- Use primary container color -->
         <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
 
         <!-- Secondary color definitions -->
@@ -36,20 +40,23 @@
         <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
 
         <!-- Background and Surface color definitions -->
-        <item name="android:colorBackground">@color/md_theme_primaryContainer</item> <!-- Set background to primary container color -->
+        <item name="android:colorBackground">@color/md_theme_primaryContainer
+        </item> <!-- Set background to primary container color -->
         <item name="colorOnBackground">@color/md_theme_onBackground</item>
         <item name="colorSurface">@color/md_theme_surface</item>
         <item name="colorOnSurface">@color/md_theme_onSurface</item>
     </style>
 
     <style name="Theme.FifteenPuzzleGame" parent="Base.Theme.FifteenPuzzleGame" />
+
     <style name="Theme.FifteenPuzzleGame.NoActionBar" parent="Base.Theme.FifteenPuzzleGame.NoActionBar" />
 
     <!-- Theme for FloatingActionButton and BottomAppBar -->
     <style name="Theme.Fab_Bottom_app_bar" parent="Base.Theme.FifteenPuzzleGame.NoActionBar">
         <!-- Use appropriate color attributes from the new palette -->
         <item name="colorPrimary">@color/md_theme_primary</item>
-        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item> <!-- Use primary container color -->
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer
+        </item> <!-- Use primary container color -->
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
 
         <!-- Surface colors -->

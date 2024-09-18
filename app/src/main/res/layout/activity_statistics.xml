@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/custom_gray"
+    android:background="@color/md_theme_tertiary"
     tools:context=".StatisticsActivity">
 
     <!-- Toolbar with full width and centered title -->
@@ -12,7 +12,7 @@
         style="@style/TextAppearance.Material3.ActionBar.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/md_theme_primary"
+        android:background="@color/md_theme_tertiary"
         android:elevation="4dp"
         android:paddingStart="0dp"
         android:paddingEnd="0dp"
@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@color/custom_gray"
+        android:background="@color/md_theme_tertiary"
         android:divider="@drawable/divider"
         android:gravity="center"
         android:padding="16dp"
