@@ -23,9 +23,9 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void initializeMenuButtons() {
-        binding.menuButtons.gridSizeButton3x3.setOnClickListener(view -> launchGame(3));
-        binding.menuButtons.gridSizeButton4x4.setOnClickListener(view -> launchGame(4));
-        binding.menuButtons.gridSizeButton5x5.setOnClickListener(view -> launchGame(5));
+        binding.gridSizeButton3x3.setOnClickListener(view -> launchGame(3));
+        binding.gridSizeButton4x4.setOnClickListener(view -> launchGame(4));
+        binding.gridSizeButton5x5.setOnClickListener(view -> launchGame(5));
     }
 
     private void launchGame(int gridSize) {
