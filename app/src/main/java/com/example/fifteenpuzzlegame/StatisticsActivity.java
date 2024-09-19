@@ -12,35 +12,40 @@ import java.util.Locale;
 
 public class StatisticsActivity extends AppCompatActivity {
 
-    // Define the grid sizes available
     private static final int[] GRID_SIZES = {3, 4, 5};
     private ActivityStatisticsBinding binding;
 
+    /**
+     * Called when the activity is created. Initializes the layout and loads statistics.
+     *
+     * @param savedInstanceState Bundle containing the saved state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inflate the layout using ViewBinding
         binding = ActivityStatisticsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Setup the toolbar and preferences
         setupToolbar();
-        loadStatistics();  // Fetching statistics from SharedPreferences
+        loadStatistics();
     }
 
-    // Set up the toolbar with back navigation
+    /**
+     * Sets up the toolbar with back navigation enabled.
+     */
     private void setupToolbar() {
         setSupportActionBar(binding.toolbarStatistics);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        binding.toolbarStatistics.setNavigationOnClickListener(v -> onBackPressed());
+        binding.toolbarStatistics.setNavigationOnClickListener(v -> finish());
     }
 
-    // Load statistics from SharedPreferences
+    /**
+     * Loads the statistics from SharedPreferences and displays them.
+     */
     private void loadStatistics() {
-        // Retrieve the name of the shared preferences
         String prefsName = getIntent().getStringExtra("prefsName");
         if (prefsName != null) {
             SharedPreferences prefs = getSharedPreferences(prefsName, MODE_PRIVATE);
@@ -48,7 +53,11 @@ public class StatisticsActivity extends AppCompatActivity {
         }
     }
 
-    // Display statistics for all grid sizes defined in GRID_SIZES
+    /**
+     * Displays statistics for all grid sizes available.
+     *
+     * @param prefs SharedPreferences containing the statistics.
+     */
     private void displayStatisticsForAllGridSizes(SharedPreferences prefs) {
         for (int gridSize : GRID_SIZES) {
             String[] statistics = getStatisticsForGridSize(prefs, gridSize);
@@ -56,9 +65,14 @@ public class StatisticsActivity extends AppCompatActivity {
         }
     }
 
-    // Fetch statistics from SharedPreferences for a specific grid size
+    /**
+     * Retrieves statistics for a specific grid size from SharedPreferences.
+     *
+     * @param prefs    SharedPreferences object containing the statistics.
+     * @param gridSize The grid size for which to retrieve the statistics.
+     * @return A string array containing games played, games won, win percentage, best time, and best move count.
+     */
     private String[] getStatisticsForGridSize(SharedPreferences prefs, int gridSize) {
-        // Use the grid size to fetch statistics for each size
         int gamesPlayed = prefs.getInt("gamesPlayed_" + gridSize, 0);
         int gamesWon = prefs.getInt("gamesWon_" + gridSize, 0);
         float winPercentage = prefs.getFloat("winPercentage_" + gridSize, 0.0f);
@@ -69,7 +83,12 @@ public class StatisticsActivity extends AppCompatActivity {
         return new String[]{String.valueOf(gamesPlayed), String.valueOf(gamesWon), String.format(Locale.getDefault(), "%.2f%%", winPercentage), formatTime(bestTime), String.valueOf(bestMoveCount)};
     }
 
-    // Update TextViews for each grid size by setting the relevant statistics
+    /**
+     * Updates the TextViews for a specific grid size with the retrieved statistics.
+     *
+     * @param gridSize   The grid size for which to display the statistics.
+     * @param statistics A string array containing the statistics for the grid size.
+     */
     private void updateTextViewsForGridSize(int gridSize, String[] statistics) {
         switch (gridSize) {
             case 3:
@@ -96,13 +115,23 @@ public class StatisticsActivity extends AppCompatActivity {
         }
     }
 
-    // Helper method to set text in a TextView
+    /**
+     * Sets the text of a specific TextView.
+     *
+     * @param textViewId The resource ID of the TextView.
+     * @param text       The text to be displayed in the TextView.
+     */
     private void updateStatisticsText(int textViewId, String text) {
         TextView textView = findViewById(textViewId);
         textView.setText(text);
     }
 
-    // Format the time from milliseconds into a readable string (MM:SS format)
+    /**
+     * Formats the time from milliseconds into a readable MM:SS format.
+     *
+     * @param timeInMillis Time in milliseconds.
+     * @return The formatted time as a string.
+     */
     private String formatTime(long timeInMillis) {
         if (timeInMillis == Long.MAX_VALUE) {
             return "N/A";

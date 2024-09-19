@@ -40,4 +40,6 @@
     <string name="chronometer_description">chronometer</string>
     <string name="auto_save">Auto-Save</string>
     <string name="dark_mode">Dark Mode</string>
+    <string name="about_title">About the Game</string>
+
 </resources>

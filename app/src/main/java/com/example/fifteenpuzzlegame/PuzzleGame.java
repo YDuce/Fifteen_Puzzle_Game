@@ -3,16 +3,15 @@ package com.example.fifteenpuzzlegame;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents the logic and state of a Fifteen Puzzle game, including tile movements, shuffling, and solving.
+ */
 public class PuzzleGame implements Parcelable {
 
-    // Parcelable.Creator for PuzzleGame
     public static final Creator<PuzzleGame> CREATOR = new Creator<PuzzleGame>() {
         @Override
         public PuzzleGame createFromParcel(Parcel in) {
@@ -24,15 +23,18 @@ public class PuzzleGame implements Parcelable {
             return new PuzzleGame[size];
         }
     };
-    // Gson instance (reuse for serialization/deserialization)
-    private static final Gson gson = new GsonBuilder().create();
+
     private final int gridSize;
     private final int[][] tiles;
     private int emptyRow;
     private int emptyCol;
     private boolean isGameFinished;
 
-    // Constructor to initialize a new game
+    /**
+     * Constructor to initialize a new PuzzleGame.
+     *
+     * @param gridSize The size of the grid (e.g., 3x3, 4x4).
+     */
     public PuzzleGame(int gridSize) {
         this.gridSize = gridSize;
         this.tiles = new int[gridSize][gridSize];
@@ -40,7 +42,11 @@ public class PuzzleGame implements Parcelable {
         shuffleTiles();
     }
 
-    // Constructor used for Parcelable
+    /**
+     * Constructor used for Parcelable.
+     *
+     * @param in The Parcel containing the PuzzleGame data.
+     */
     protected PuzzleGame(Parcel in) {
         this.gridSize = in.readInt();
         this.tiles = new int[gridSize][gridSize];
@@ -49,15 +55,12 @@ public class PuzzleGame implements Parcelable {
         }
         this.emptyRow = in.readInt();
         this.emptyCol = in.readInt();
-        this.isGameFinished = in.readByte() != 0; // read boolean as byte
+        this.isGameFinished = in.readByte() != 0; // Read boolean as byte
     }
 
-    // Convert JSON string back to PuzzleGame object using Gson
-    public static PuzzleGame fromJson(String jsonString) {
-        return gson.fromJson(jsonString, PuzzleGame.class);
-    }
-
-    // Initialize tiles in ascending order with the last tile empty
+    /**
+     * Initializes the tiles in ascending order with the last tile as empty.
+     */
     private void initializeTiles() {
         int number = 1;
         for (int i = 0; i < gridSize; i++) {
@@ -73,7 +76,9 @@ public class PuzzleGame implements Parcelable {
         emptyCol = gridSize - 1;
     }
 
-    // Shuffle the tiles while ensuring the puzzle is solvable and not solved
+    /**
+     * Shuffles the tiles randomly, ensuring the puzzle remains solvable and not already solved.
+     */
     public void shuffleTiles() {
         List<Integer> flatTiles = new ArrayList<>();
         for (int[] row : tiles) {
@@ -98,7 +103,13 @@ public class PuzzleGame implements Parcelable {
         } while (!isSolvable() || isSolved());
     }
 
-    // Attempt to move the tiles, returns true if successful
+    /**
+     * Attempts to move the tiles, either horizontally or vertically.
+     *
+     * @param row The row of the tile to move.
+     * @param col The column of the tile to move.
+     * @return True if the tile was successfully moved, false otherwise.
+     */
     public boolean moveTiles(int row, int col) {
         if (row == emptyRow || col == emptyCol) {
             if (row == emptyRow) {
@@ -144,7 +155,11 @@ public class PuzzleGame implements Parcelable {
         emptyCol = col2;
     }
 
-    // Check if the puzzle is solvable
+    /**
+     * Checks whether the current puzzle configuration is solvable.
+     *
+     * @return True if the puzzle is solvable, false otherwise.
+     */
     private boolean isSolvable() {
         int[] flatTiles = new int[gridSize * gridSize - 1];
         int index = 0;
@@ -166,10 +181,14 @@ public class PuzzleGame implements Parcelable {
             }
         }
 
-        return (inversions % 2 == 0);  // Solvable if inversions are even
+        return (inversions % 2 == 0);
     }
 
-    // Check if the puzzle is solved
+    /**
+     * Checks whether the puzzle is currently solved.
+     *
+     * @return True if the puzzle is solved, false otherwise.
+     */
     public boolean isSolved() {
         int expectedValue = 1;
         for (int i = 0; i < gridSize; i++) {
@@ -184,7 +203,12 @@ public class PuzzleGame implements Parcelable {
         return true;
     }
 
-    // Parcelable methods
+    /**
+     * Writes the PuzzleGame object to a Parcel.
+     *
+     * @param dest  The destination Parcel.
+     * @param flags Flags for parceling.
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(gridSize);
@@ -193,40 +217,44 @@ public class PuzzleGame implements Parcelable {
         }
         dest.writeInt(emptyRow);
         dest.writeInt(emptyCol);
-        dest.writeByte((byte) (isGameFinished ? 1 : 0));  // boolean as byte
+        dest.writeByte((byte) (isGameFinished ? 1 : 0));  // Boolean as byte
     }
 
+    /**
+     * Describes the contents for Parcelable.
+     *
+     * @return An integer describing the contents (usually 0).
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
-    // Convert PuzzleGame to JSON string using Gson
-    public String toJson() {
-        return gson.toJson(this);
-    }
-
-    // Getters
-    public int[][] getTiles() {
-        return tiles;
-    }
-
+    /**
+     * Retrieves the value of a specific tile.
+     *
+     * @param row The row of the tile.
+     * @param col The column of the tile.
+     * @return The value of the tile.
+     */
     public int getTileValue(int row, int col) {
         return tiles[row][col];
     }
 
-    public int getEmptyRow() {
-        return emptyRow;
-    }
-
-    public int getEmptyCol() {
-        return emptyCol;
-    }
-
+    /**
+     * Checks if the game is finished.
+     *
+     * @return True if the game is finished, false otherwise.
+     */
     public boolean isGameFinished() {
         return isGameFinished;
     }
 
+    /**
+     * Retrieves the size of the puzzle grid.
+     *
+     * @return The grid size (e.g., 3 for 3x3 grid).
+     */
     public int getGridSize() {
         return gridSize;
     }
